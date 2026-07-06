@@ -1,0 +1,58 @@
+/* Reset default browser spacing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main page styling */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #111111;
+    color: #ffffff;
+    line-height: 1.6;
+    padding: 40px;
+}
+
+/* Main company heading */
+h1 {
+    color: #f7941d;
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+/* Description text */
+p {
+    font-size: 20px;
+    color: #dddddd;
+    margin-bottom: 30px;
+}
+
+/* Materials heading */
+h2 {
+    color: #f7941d;
+    font-size: 30px;
+    margin-bottom: 15px;
+}
+
+/* Materials list */
+ul {
+    list-style-position: inside;
+    background-color: #1f1f1f;
+    padding: 25px;
+    border-left: 5px solid #f7941d;
+    border-radius: 8px;
+    max-width: 500px;
+}
+
+/* Individual material */
+li {
+    font-size: 18px;
+    padding: 8px 0;
+    border-bottom: 1px solid #444444;
+}
+
+/* Remove line under final item */
+li:last-child {
+    border-bottom: none;
+}
