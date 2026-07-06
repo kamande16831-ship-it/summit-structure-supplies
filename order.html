@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Order construction materials from Summit Structure Supplies."
+    >
+
+    <title>Order Materials | Summit Structure Supplies</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+
+        <div class="container navigation">
+
+            <a href="index.html" class="brand">
+
+                <div class="brand-icon">
+                    SSS
+                </div>
+
+                <div class="brand-name">
+                    <span>Summit Structure</span>
+                    <span>Supplies</span>
+                </div>
+
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#materials">Materials</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#contact">Contact</a>
+
+                <a href="order.html" class="nav-button">
+                    Order Now
+                </a>
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- Page heading -->
+        <section class="order-hero">
+
+            <div class="container">
+
+                <p class="hero-label">
+                    Construction material ordering
+                </p>
+
+                <h1>Place Your Material Order</h1>
+
+                <p>
+                    Complete the form below and provide the materials,
+                    quantities and delivery location for your project.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Order form section -->
+        <section class="order-section">
+
+            <div class="container order-layout">
+
+                <!-- Main order form -->
+                <form class="order-form" id="orderForm">
+
+                    <div class="form-heading">
+                        <p class="section-label">Order details</p>
+                        <h2>Material Requirements</h2>
+
+                        <p>
+                            Enter the construction materials required
+                            for your project.
+                        </p>
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="customerName">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customerName"
+                                name="customerName"
+                                placeholder="Enter your full name"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="phoneNumber">
+                                Phone Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phoneNumber"
+                                name="phoneNumber"
+                                placeholder="+254 7XX XXX XXX"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="emailAddress">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="emailAddress"
+                                name="emailAddress"
+                                placeholder="name@example.com"
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="materialType">
+                                Select Material
+                            </label>
+
+                            <select
+                                id="materialType"
+                                name="materialType"
+                                required
+                            >
+                                <option value="">
+                                    Choose material
+                                </option>
+
+                                <option value="Construction Sand">
+                                    Construction Sand
+                                </option>
+
+                                <option value="Ballast">
+                                    Ballast
+                                </option>
+
+                                <option value="Construction Stones">
+                                    Construction Stones
+                                </option>
+
+                                <option value="Cement">
+                                    Cement
+                                </option>
+
+                                <option value="Building Blocks">
+                                    Building Blocks
+                                </option>
+
+                                <option value="Other Materials">
+                                    Other Materials
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="quantity">
+                                Quantity
+                            </label>
+
+                            <input
+                                type="number"
+                                id="quantity"
+                                name="quantity"
+                                min="1"
+                                placeholder="Enter quantity"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="measurementUnit">
+                                Measurement Unit
+                            </label>
+
+                            <select
+                                id="measurementUnit"
+                                name="measurementUnit"
+                                required
+                            >
+                                <option value="">
+                                    Select unit
+                                </option>
+
+                                <option value="Tonnes">
+                                    Tonnes
+                                </option>
+
+                                <option value="Truck Loads">
+                                    Truck Loads
+                                </option>
+
+                                <option value="Bags">
+                                    Bags
+                                </option>
+
+                                <option value="Pieces">
+                                    Pieces
+                                </option>
+
+                                <option value="Cubic Metres">
+                                    Cubic Metres
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group full-width">
+                            <label for="deliveryLocation">
+                                Delivery Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="deliveryLocation"
+                                name="deliveryLocation"
+                                placeholder="Enter town, estate, road or project location"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="deliveryDate">
+                                Preferred Delivery Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="deliveryDate"
+                                name="deliveryDate"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="projectType">
+                                Project Type
+                            </label>
+
+                            <select
+                                id="projectType"
+                                name="projectType"
+                                required
+                            >
+                                <option value="">
+                                    Select project
+                                </option>
+
+                                <option value="Residential Construction">
+                                    Residential Construction
+                                </option>
+
+                                <option value="Commercial Construction">
+                                    Commercial Construction
+                                </option>
+
+                                <option value="Road Construction">
+                                    Road Construction
+                                </option>
+
+                                <option value="Renovation">
+                                    Renovation
+                                </option>
+
+                                <option value="Landscaping">
+                                    Landscaping
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-group full-width">
+                            <label for="orderNotes">
+                                Additional Information
+                            </label>
+
+                            <textarea
+                                id="orderNotes"
+                                name="orderNotes"
+                                rows="5"
+                                placeholder="Enter material specifications, directions or other instructions"
+                            ></textarea>
+                        </div>
+
+                    </div>
+
+
+                    <label class="confirmation-box">
+
+                        <input
+                            type="checkbox"
+                            id="orderConfirmation"
+                            required
+                        >
+
+                        <span>
+                            I confirm that the information provided is correct.
+                        </span>
+
+                    </label>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button order-submit-button"
+                    >
+                        Submit Order Request
+                    </button>
+
+
+                    <p
+                        class="order-message"
+                        id="orderMessage"
+                    ></p>
+
+                </form>
+
+
+                <!-- Order information -->
+                <aside class="order-sidebar">
+
+                    <div class="sidebar-card">
+
+                        <p class="section-label">
+                            Before ordering
+                        </p>
+
+                        <h2>What Happens Next?</h2>
+
+                        <div class="sidebar-step">
+
+                            <span>1</span>
+
+                            <div>
+                                <h3>Order Review</h3>
+
+                                <p>
+                                    Our team reviews your material
+                                    requirements and delivery location.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="sidebar-step">
+
+                            <span>2</span>
+
+                            <div>
+                                <h3>Supplier Confirmation</h3>
+
+                                <p>
+                                    We confirm availability with a
+                                    suitable distributor.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="sidebar-step">
+
+                            <span>3</span>
+
+                            <div>
+                                <h3>Price and Delivery</h3>
+
+                                <p>
+                                    You receive the price, payment
+                                    instructions and expected arrival time.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="sidebar-card distributor-status">
+
+                        <p class="section-label">
+                            Distributor platform
+                        </p>
+
+                        <h2>Supplier Information</h2>
+
+                        <p>
+                            Distributor names, distances and arrival
+                            times will appear here after suppliers
+                            register on the platform.
+                        </p>
+
+                        <div class="empty-distributor-box">
+                            No registered distributors yet
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="container footer-layout">
+
+            <div>
+                <h3>Summit Structure Supplies</h3>
+
+                <p>
+                    Equipment • Materials • Logistics
+                </p>
+            </div>
+
+            <p>
+                &copy; 2026 Summit Structure Supplies.
+                All rights reserved.
+            </p>
+
+        </div>
+
+    </footer>
+
+</body>
+</html>
