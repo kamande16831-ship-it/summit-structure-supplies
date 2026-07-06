@@ -653,3 +653,276 @@ textarea {
         text-align: center;
     }
 }
+
+/* =========================
+   ORDER PAGE
+========================= */
+
+.order-hero {
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.86),
+            rgba(0, 0, 0, 0.9)
+        ),
+        radial-gradient(circle at top right, #4a2c0c, #111111 60%);
+    color: #ffffff;
+    padding: 85px 0;
+    text-align: center;
+}
+
+.order-hero h1 {
+    font-size: clamp(38px, 6vw, 60px);
+    line-height: 1.1;
+    margin-bottom: 18px;
+}
+
+.order-hero p:last-child {
+    max-width: 700px;
+    margin: 0 auto;
+    color: #d2d2d2;
+    font-size: 18px;
+}
+
+.order-section {
+    background-color: #f5f5f5;
+    padding: 90px 0;
+}
+
+.order-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.6fr);
+    gap: 35px;
+    align-items: start;
+}
+
+.order-form {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.09);
+}
+
+.form-heading {
+    margin-bottom: 32px;
+}
+
+.form-heading h2 {
+    color: #171717;
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.form-heading > p:last-child {
+    color: #666666;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    color: #222222;
+    font-weight: 700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    border: 1px solid #cccccc;
+    border-radius: 7px;
+    background-color: #ffffff;
+    color: #222222;
+    padding: 13px 14px;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-group input,
+.form-group select {
+    min-height: 52px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #f7941d;
+    box-shadow: 0 0 0 3px rgba(247, 148, 29, 0.15);
+}
+
+.confirmation-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 25px;
+    color: #444444;
+    cursor: pointer;
+}
+
+.confirmation-box input {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    accent-color: #f7941d;
+}
+
+.order-submit-button {
+    width: 100%;
+    margin-top: 25px;
+    font-size: 17px;
+}
+
+.order-message {
+    margin-top: 18px;
+    text-align: center;
+    font-weight: 700;
+}
+
+
+/* =========================
+   ORDER SIDEBAR
+========================= */
+
+.order-sidebar {
+    display: grid;
+    gap: 25px;
+}
+
+.sidebar-card {
+    background-color: #ffffff;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 14px 35px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-card h2 {
+    color: #171717;
+    font-size: 27px;
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.sidebar-step {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 14px;
+    padding: 18px 0;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.sidebar-step:last-child {
+    border-bottom: none;
+}
+
+.sidebar-step > span {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #f7941d;
+    color: #111111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+}
+
+.sidebar-step h3 {
+    color: #222222;
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.sidebar-step p {
+    color: #696969;
+    font-size: 14px;
+}
+
+.distributor-status {
+    background-color: #fff3df;
+    border: 1px solid #f7cf99;
+}
+
+.distributor-status > p:not(.section-label) {
+    color: #6c5a43;
+    margin-bottom: 20px;
+}
+
+.empty-distributor-box {
+    min-height: 120px;
+    border: 2px dashed #f7941d;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #8a5b21;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    font-weight: 700;
+}
+
+
+/* =========================
+   ORDER PAGE RESPONSIVENESS
+========================= */
+
+@media (max-width: 900px) {
+
+    .order-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .order-sidebar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+
+    .order-hero {
+        padding: 65px 0;
+    }
+
+    .order-section {
+        padding: 65px 0;
+    }
+
+    .order-form {
+        padding: 25px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full-width {
+        grid-column: auto;
+    }
+
+    .order-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar-card {
+        padding: 25px;
+    }
+}
