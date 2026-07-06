@@ -1,25 +1,12 @@
 "use strict";
 
-/*
-=================================
-SUMMIT STRUCTURE SUPPLIES
-MAIN JAVASCRIPT
-=================================
-*/
-
 document.addEventListener("DOMContentLoaded", function () {
     setCurrentYear();
     setMinimumDeliveryDate();
-    prepareOrderForm();
-    prepareCallbackForm();
+    setupOrderForm();
+    setupCallbackForm();
 });
 
-
-/*
-=================================
-CURRENT YEAR
-=================================
-*/
 
 function setCurrentYear() {
     const yearElements = document.querySelectorAll(".current-year");
@@ -29,12 +16,6 @@ function setCurrentYear() {
     });
 }
 
-
-/*
-=================================
-MINIMUM DELIVERY DATE
-=================================
-*/
 
 function setMinimumDeliveryDate() {
     const deliveryDateInput = document.getElementById("deliveryDate");
@@ -52,13 +33,7 @@ function setMinimumDeliveryDate() {
 }
 
 
-/*
-=================================
-ORDER FORM
-=================================
-*/
-
-function prepareOrderForm() {
+function setupOrderForm() {
     const orderForm = document.getElementById("orderForm");
     const orderMessage = document.getElementById("orderMessage");
 
@@ -69,83 +44,64 @@ function prepareOrderForm() {
     orderForm.addEventListener("submit", function (event) {
         event.preventDefault();
 
-        const customerName =
-            document.getElementById("customerName").value.trim();
-
-        const phoneNumber =
-            document.getElementById("phoneNumber").value.trim();
-
-        const emailAddress =
-            document.getElementById("emailAddress").value.trim();
-
-        const materialType =
-            document.getElementById("materialType").value;
-
-        const quantity =
-            document.getElementById("quantity").value;
-
-        const measurementUnit =
-            document.getElementById("measurementUnit").value;
-
-        const deliveryLocation =
-            document.getElementById("deliveryLocation").value.trim();
-
-        const deliveryDate =
-            document.getElementById("deliveryDate").value;
-
-        const projectType =
-            document.getElementById("projectType").value;
-
-        const orderNotes =
-            document.getElementById("orderNotes").value.trim();
-
-        const confirmation =
-            document.getElementById("orderConfirmation").checked;
-
-        if (
-            !customerName ||
-            !phoneNumber ||
-            !materialType ||
-            !quantity ||
-            !measurementUnit ||
-            !deliveryLocation ||
-            !deliveryDate ||
-            !projectType ||
-            !confirmation
-        ) {
-            showOrderMessage(
-                orderMessage,
-                "Please complete all required fields.",
-                "error"
-            );
-
-            return;
-        }
-
-        const orderReference = createOrderReference();
-
         const orderData = {
-            reference: orderReference,
-            customerName: customerName,
-            phoneNumber: phoneNumber,
-            emailAddress: emailAddress,
-            materialType: materialType,
-            quantity: quantity,
-            measurementUnit: measurementUnit,
-            deliveryLocation: deliveryLocation,
-            deliveryDate: deliveryDate,
-            projectType: projectType,
-            orderNotes: orderNotes,
+            reference: createOrderReference(),
+
+            customerName: document
+                .getElementById("customerName")
+                .value
+                .trim(),
+
+            phoneNumber: document
+                .getElementById("phoneNumber")
+                .value
+                .trim(),
+
+            emailAddress: document
+                .getElementById("emailAddress")
+                .value
+                .trim(),
+
+            materialType: document
+                .getElementById("materialType")
+                .value,
+
+            quantity: document
+                .getElementById("quantity")
+                .value,
+
+            measurementUnit: document
+                .getElementById("measurementUnit")
+                .value,
+
+            deliveryLocation: document
+                .getElementById("deliveryLocation")
+                .value
+                .trim(),
+
+            deliveryDate: document
+                .getElementById("deliveryDate")
+                .value,
+
+            projectType: document
+                .getElementById("projectType")
+                .value,
+
+            orderNotes: document
+                .getElementById("orderNotes")
+                .value
+                .trim(),
+
             submittedAt: new Date().toISOString()
         };
 
-        saveOrderLocally(orderData);
+        saveOrder(orderData);
 
-        showOrderMessage(
-            orderMessage,
-            `Thank you, ${customerName}. Your request has been recorded. Reference: ${orderReference}`,
-            "success"
-        );
+        orderMessage.textContent =
+            `Order received successfully. Reference: ${orderData.reference}`;
+
+        orderMessage.className =
+            "order-message success-message";
 
         orderForm.reset();
         setMinimumDeliveryDate();
@@ -153,37 +109,19 @@ function prepareOrderForm() {
 }
 
 
-/*
-=================================
-CREATE ORDER REFERENCE
-=================================
-*/
-
 function createOrderReference() {
     const date = new Date();
 
     const year = date.getFullYear();
-
-    const month =
-        String(date.getMonth() + 1).padStart(2, "0");
-
-    const day =
-        String(date.getDate()).padStart(2, "0");
-
-    const randomNumber =
-        Math.floor(1000 + Math.random() * 9000);
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const randomNumber = Math.floor(1000 + Math.random() * 9000);
 
     return `SSS-${year}${month}${day}-${randomNumber}`;
 }
 
 
-/*
-=================================
-SAVE ORDERS LOCALLY
-=================================
-*/
-
-function saveOrderLocally(orderData) {
+function saveOrder(orderData) {
     const savedOrders =
         JSON.parse(localStorage.getItem("summitOrders")) || [];
 
@@ -196,98 +134,35 @@ function saveOrderLocally(orderData) {
 }
 
 
-/*
-=================================
-ORDER MESSAGE
-=================================
-*/
-
-function showOrderMessage(element, message, type) {
-    element.textContent = message;
-
-    element.classList.remove(
-        "success-message",
-        "error-message"
-    );
-
-    if (type === "success") {
-        element.classList.add("success-message");
-    } else {
-        element.classList.add("error-message");
-    }
-}
-
-
-/*
-=================================
-CALLBACK FORM
-=================================
-*/
-
-function prepareCallbackForm() {
-    const callbackForm =
-        document.querySelector(".contact-form");
+function setupCallbackForm() {
+    const callbackForm = document.querySelector(".contact-form");
 
     if (!callbackForm) {
         return;
     }
 
-    const callbackMessage =
-        document.createElement("p");
+    const responseMessage = document.createElement("p");
 
-    callbackMessage.className = "callback-message";
+    responseMessage.className = "callback-message";
 
-    callbackForm.appendChild(callbackMessage);
+    callbackForm.appendChild(responseMessage);
 
     callbackForm.addEventListener("submit", function (event) {
         event.preventDefault();
 
-        const nameInput =
-            callbackForm.querySelector("#name");
+        const nameInput = callbackForm.querySelector("#name");
 
-        const phoneInput =
-            callbackForm.querySelector("#phone");
-
-        const materialInput =
-            callbackForm.querySelector("#material");
-
-        const locationInput =
-            callbackForm.querySelector("#location");
-
-        if (
-            !nameInput ||
-            !phoneInput ||
-            !materialInput ||
-            !locationInput
-        ) {
+        if (!nameInput) {
             return;
         }
 
-        const callbackRequest = {
-            name: nameInput.value.trim(),
-            phone: phoneInput.value.trim(),
-            material: materialInput.value,
-            location: locationInput.value.trim(),
-            submittedAt: new Date().toISOString()
-        };
+        const name = nameInput.value.trim();
 
-        const savedRequests =
-            JSON.parse(
-                localStorage.getItem("summitCallbackRequests")
-            ) || [];
+        responseMessage.textContent =
+            `Thank you, ${name}. Your callback request has been recorded.`;
 
-        savedRequests.push(callbackRequest);
-
-        localStorage.setItem(
-            "summitCallbackRequests",
-            JSON.stringify(savedRequests)
-        );
-
-        callbackMessage.textContent =
-            `Thank you, ${callbackRequest.name}. Your callback request has been recorded.`;
-
-        callbackMessage.classList.remove("error-message");
-        callbackMessage.classList.add("success-message");
+        responseMessage.className =
+            "callback-message success-message";
 
         callbackForm.reset();
     });
