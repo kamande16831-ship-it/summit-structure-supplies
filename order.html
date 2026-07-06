@@ -38,15 +38,28 @@
 
             </a>
 
-            <nav class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="index.html#materials">Materials</a>
-                <a href="index.html#about">About</a>
-                <a href="index.html#contact">Contact</a>
+            <nav class="nav-links" aria-label="Main navigation">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="index.html#materials">
+                    Materials
+                </a>
+
+                <a href="index.html#about">
+                    About
+                </a>
+
+                <a href="index.html#contact">
+                    Contact
+                </a>
 
                 <a href="order.html" class="nav-button">
                     Order Now
                 </a>
+
             </nav>
 
         </div>
@@ -65,7 +78,9 @@
                     Construction material ordering
                 </p>
 
-                <h1>Place Your Material Order</h1>
+                <h1>
+                    Place Your Material Order
+                </h1>
 
                 <p>
                     Complete the form below and provide the materials,
@@ -86,19 +101,27 @@
                 <form class="order-form" id="orderForm">
 
                     <div class="form-heading">
-                        <p class="section-label">Order details</p>
-                        <h2>Material Requirements</h2>
+
+                        <p class="section-label">
+                            Order details
+                        </p>
+
+                        <h2>
+                            Material Requirements
+                        </h2>
 
                         <p>
                             Enter the construction materials required
                             for your project.
                         </p>
+
                     </div>
 
 
                     <div class="form-grid">
 
                         <div class="form-group">
+
                             <label for="customerName">
                                 Full Name
                             </label>
@@ -108,12 +131,15 @@
                                 id="customerName"
                                 name="customerName"
                                 placeholder="Enter your full name"
+                                autocomplete="name"
                                 required
                             >
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="phoneNumber">
                                 Phone Number
                             </label>
@@ -123,12 +149,15 @@
                                 id="phoneNumber"
                                 name="phoneNumber"
                                 placeholder="+254 7XX XXX XXX"
+                                autocomplete="tel"
                                 required
                             >
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="emailAddress">
                                 Email Address
                             </label>
@@ -138,11 +167,14 @@
                                 id="emailAddress"
                                 name="emailAddress"
                                 placeholder="name@example.com"
+                                autocomplete="email"
                             >
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="materialType">
                                 Select Material
                             </label>
@@ -152,6 +184,7 @@
                                 name="materialType"
                                 required
                             >
+
                                 <option value="">
                                     Choose material
                                 </option>
@@ -179,11 +212,14 @@
                                 <option value="Other Materials">
                                     Other Materials
                                 </option>
+
                             </select>
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="quantity">
                                 Quantity
                             </label>
@@ -193,13 +229,16 @@
                                 id="quantity"
                                 name="quantity"
                                 min="1"
+                                step="1"
                                 placeholder="Enter quantity"
                                 required
                             >
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="measurementUnit">
                                 Measurement Unit
                             </label>
@@ -209,6 +248,7 @@
                                 name="measurementUnit"
                                 required
                             >
+
                                 <option value="">
                                     Select unit
                                 </option>
@@ -232,11 +272,14 @@
                                 <option value="Cubic Metres">
                                     Cubic Metres
                                 </option>
+
                             </select>
+
                         </div>
 
 
                         <div class="form-group full-width">
+
                             <label for="deliveryLocation">
                                 Delivery Location
                             </label>
@@ -246,12 +289,15 @@
                                 id="deliveryLocation"
                                 name="deliveryLocation"
                                 placeholder="Enter town, estate, road or project location"
+                                autocomplete="street-address"
                                 required
                             >
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="deliveryDate">
                                 Preferred Delivery Date
                             </label>
@@ -262,10 +308,12 @@
                                 name="deliveryDate"
                                 required
                             >
+
                         </div>
 
 
                         <div class="form-group">
+
                             <label for="projectType">
                                 Project Type
                             </label>
@@ -275,6 +323,7 @@
                                 name="projectType"
                                 required
                             >
+
                                 <option value="">
                                     Select project
                                 </option>
@@ -302,11 +351,14 @@
                                 <option value="Other">
                                     Other
                                 </option>
+
                             </select>
+
                         </div>
 
 
                         <div class="form-group full-width">
+
                             <label for="orderNotes">
                                 Additional Information
                             </label>
@@ -317,6 +369,7 @@
                                 rows="5"
                                 placeholder="Enter material specifications, directions or other instructions"
                             ></textarea>
+
                         </div>
 
                     </div>
@@ -327,6 +380,7 @@
                         <input
                             type="checkbox"
                             id="orderConfirmation"
+                            name="orderConfirmation"
                             required
                         >
 
@@ -348,12 +402,13 @@
                     <p
                         class="order-message"
                         id="orderMessage"
+                        aria-live="polite"
                     ></p>
 
                 </form>
 
 
-                <!-- Order information -->
+                <!-- Order information sidebar -->
                 <aside class="order-sidebar">
 
                     <div class="sidebar-card">
@@ -362,19 +417,26 @@
                             Before ordering
                         </p>
 
-                        <h2>What Happens Next?</h2>
+                        <h2>
+                            What Happens Next?
+                        </h2>
+
 
                         <div class="sidebar-step">
 
                             <span>1</span>
 
                             <div>
-                                <h3>Order Review</h3>
+
+                                <h3>
+                                    Order Review
+                                </h3>
 
                                 <p>
                                     Our team reviews your material
                                     requirements and delivery location.
                                 </p>
+
                             </div>
 
                         </div>
@@ -385,12 +447,16 @@
                             <span>2</span>
 
                             <div>
-                                <h3>Supplier Confirmation</h3>
+
+                                <h3>
+                                    Supplier Confirmation
+                                </h3>
 
                                 <p>
                                     We confirm availability with a
                                     suitable distributor.
                                 </p>
+
                             </div>
 
                         </div>
@@ -401,12 +467,16 @@
                             <span>3</span>
 
                             <div>
-                                <h3>Price and Delivery</h3>
+
+                                <h3>
+                                    Price and Delivery
+                                </h3>
 
                                 <p>
                                     You receive the price, payment
                                     instructions and expected arrival time.
                                 </p>
+
                             </div>
 
                         </div>
@@ -420,7 +490,9 @@
                             Distributor platform
                         </p>
 
-                        <h2>Supplier Information</h2>
+                        <h2>
+                            Supplier Information
+                        </h2>
 
                         <p>
                             Distributor names, distances and arrival
@@ -449,21 +521,30 @@
         <div class="container footer-layout">
 
             <div>
-                <h3>Summit Structure Supplies</h3>
+
+                <h3>
+                    Summit Structure Supplies
+                </h3>
 
                 <p>
                     Equipment • Materials • Logistics
                 </p>
+
             </div>
 
             <p>
-                &copy; 2026 Summit Structure Supplies.
-                All rights reserved.
+                &copy;
+                <span class="current-year">2026</span>
+                Summit Structure Supplies. All rights reserved.
             </p>
 
         </div>
 
     </footer>
+
+
+    <!-- Main JavaScript -->
+    <script src="js/main.js"></script>
 
 </body>
 </html>
