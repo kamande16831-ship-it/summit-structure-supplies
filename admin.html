@@ -8,86 +8,158 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin Dashboard | Summit Structure Supplies</title>
+    <title>Admin Portal | Summit Structure Supplies</title>
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin-dashboard.css">
 </head>
 
-<body class="admin-body">
+<body class="unified-admin-body">
 
-    <header class="admin-header">
-        <div class="container admin-header-layout">
+    <header class="unified-admin-header">
 
-            <div>
-                <p class="admin-small-title">Private administration area</p>
-                <h1>Summit Structure Supplies</h1>
-            </div>
+        <div class="container unified-admin-navigation">
 
-            <button
-                type="button"
-                id="logoutButton"
-                class="admin-logout-button hidden"
+            <a href="admin.html" class="unified-admin-brand">
+
+                <img
+                    src="assets/images/logo.png"
+                    alt="Summit Structure Supplies logo"
+                >
+
+                <div>
+                    <strong>Summit Structure Supplies</strong>
+                    <span>Administration Portal</span>
+                </div>
+
+            </a>
+
+
+            <nav
+                class="unified-admin-menu hidden"
+                id="unifiedAdminMenu"
+                aria-label="Administrator navigation"
             >
-                Log Out
-            </button>
+
+                <button
+                    type="button"
+                    class="admin-menu-button active"
+                    data-admin-view="dashboard"
+                >
+                    Dashboard
+                </button>
+
+                <button
+                    type="button"
+                    class="admin-menu-button"
+                    data-admin-view="orders"
+                >
+                    Orders
+                </button>
+
+                <button
+                    type="button"
+                    class="admin-menu-button"
+                    data-admin-view="materials"
+                >
+                    Materials
+                </button>
+
+                <a
+                    href="materials.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Public Registry
+                </a>
+
+                <a
+                    href="index.html"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Public Website
+                </a>
+
+                <button
+                    type="button"
+                    class="admin-logout-menu-button"
+                    id="unifiedAdminLogout"
+                >
+                    Log Out
+                </button>
+
+            </nav>
 
         </div>
+
     </header>
 
 
-    <main class="admin-main">
+    <main class="unified-admin-main">
 
-        <!-- Admin login -->
+        <!-- Administrator login -->
         <section
-            class="admin-login-section"
-            id="adminLoginSection"
+            class="unified-admin-login"
+            id="unifiedAdminLoginSection"
         >
 
             <form
-                class="admin-login-form"
-                id="adminLoginForm"
+                class="unified-admin-login-form"
+                id="unifiedAdminLoginForm"
             >
 
-                <p class="section-label">Administrator login</p>
+                <p class="section-label">
+                    Private administration area
+                </p>
 
-                <h2>Access Order Management</h2>
+                <h1>Administrator Login</h1>
 
                 <p>
-                    Sign in to view construction material orders.
+                    Sign in to manage orders and construction materials.
                 </p>
 
                 <div class="form-group">
-                    <label for="adminUsername">Administrator Email</label>
+
+                    <label for="unifiedAdminEmail">
+                        Administrator Email
+                    </label>
 
                     <input
                         type="email"
-                        id="adminUsername"
-                        placeholder="admin@example.com"
+                        id="unifiedAdminEmail"
                         autocomplete="username"
                         required
                     >
+
                 </div>
 
                 <div class="form-group">
-                    <label for="adminPassword">Password</label>
+
+                    <label for="unifiedAdminPassword">
+                        Password
+                    </label>
 
                     <input
                         type="password"
-                        id="adminPassword"
+                        id="unifiedAdminPassword"
+                        autocomplete="current-password"
                         required
                     >
+
                 </div>
 
                 <button
                     type="submit"
-                    class="primary-button admin-login-button"
+                    class="primary-button unified-login-button"
                 >
                     Sign In
                 </button>
 
                 <p
-                    id="adminLoginMessage"
-                    class="admin-login-message"
+                    id="unifiedAdminLoginMessage"
+                    class="unified-admin-message"
+                    aria-live="polite"
                 ></p>
 
             </form>
@@ -95,134 +167,540 @@
         </section>
 
 
-        <!-- Admin dashboard -->
-        <section
-            class="container admin-dashboard hidden"
-            id="adminDashboard"
+        <!-- Unified administrator application -->
+        <div
+            class="container unified-admin-application hidden"
+            id="unifiedAdminApplication"
         >
 
-            <div class="admin-dashboard-heading">
+            <!-- Dashboard -->
+            <section
+                class="admin-view-panel"
+                data-admin-panel="dashboard"
+            >
 
-                <div>
-                    <p class="section-label">Order management</p>
-                    <h2>Customer Orders</h2>
+                <div class="admin-panel-heading">
 
-                    <p>
-                        Review orders submitted through the public order page.
-                    </p>
-                </div>
+                    <div>
+                        <p class="section-label">Overview</p>
+                        <h1>Administrator Dashboard</h1>
 
-                <div class="admin-dashboard-actions">
-
-                    <a
-                        href="order.html"
-                        target="_blank"
-                        class="admin-secondary-button"
-                    >
-                        Open Order Page
-                    </a>
+                        <p>
+                            Review orders and manage the materials catalogue.
+                        </p>
+                    </div>
 
                     <button
                         type="button"
-                        id="refreshOrdersButton"
                         class="primary-button"
+                        id="refreshDashboardButton"
                     >
-                        Refresh Orders
+                        Refresh Dashboard
                     </button>
 
                 </div>
 
-            </div>
+
+                <div class="unified-statistics-grid">
+
+                    <article class="unified-stat-card">
+                        <span>Total Orders</span>
+                        <strong id="dashboardTotalOrders">0</strong>
+                    </article>
+
+                    <article class="unified-stat-card">
+                        <span>New Orders</span>
+                        <strong id="dashboardNewOrders">0</strong>
+                    </article>
+
+                    <article class="unified-stat-card">
+                        <span>Processing</span>
+                        <strong id="dashboardProcessingOrders">0</strong>
+                    </article>
+
+                    <article class="unified-stat-card">
+                        <span>Completed</span>
+                        <strong id="dashboardCompletedOrders">0</strong>
+                    </article>
+
+                    <article class="unified-stat-card">
+                        <span>Registered Materials</span>
+                        <strong id="dashboardTotalMaterials">0</strong>
+                    </article>
+
+                    <article class="unified-stat-card">
+                        <span>Public Materials</span>
+                        <strong id="dashboardActiveMaterials">0</strong>
+                    </article>
+
+                </div>
 
 
-            <div class="admin-summary-grid">
+                <div class="dashboard-quick-actions">
 
-                <article class="admin-summary-card">
-                    <span>Total Orders</span>
-                    <strong id="totalOrdersCount">0</strong>
-                </article>
+                    <button
+                        type="button"
+                        class="dashboard-action-card"
+                        data-admin-view="orders"
+                    >
+                        <strong>Manage Orders</strong>
 
-                <article class="admin-summary-card">
-                    <span>New Orders</span>
-                    <strong id="newOrdersCount">0</strong>
-                </article>
+                        <span>
+                            View customer requests and update order status.
+                        </span>
+                    </button>
 
-                <article class="admin-summary-card">
-                    <span>Processing</span>
-                    <strong id="processingOrdersCount">0</strong>
-                </article>
+                    <button
+                        type="button"
+                        class="dashboard-action-card"
+                        data-admin-view="materials"
+                    >
+                        <strong>Manage Materials</strong>
 
-                <article class="admin-summary-card">
-                    <span>Completed</span>
-                    <strong id="completedOrdersCount">0</strong>
-                </article>
+                        <span>
+                            Add brands, availability, descriptions and prices.
+                        </span>
+                    </button>
 
-            </div>
-
-
-            <div class="admin-toolbar">
-
-                <input
-                    type="search"
-                    id="orderSearch"
-                    placeholder="Search by name, phone, reference or material"
-                >
-
-                <button
-                    type="button"
-                    id="exportOrdersButton"
-                    class="admin-secondary-button"
-                >
-                    Export CSV
-                </button>
-
-            </div>
+                </div>
 
 
-            <div
-                class="admin-empty-message hidden"
-                id="adminEmptyMessage"
+                <div class="dashboard-recent-section">
+
+                    <div class="dashboard-section-heading">
+                        <h2>Recent Orders</h2>
+
+                        <button
+                            type="button"
+                            class="admin-text-button"
+                            data-admin-view="orders"
+                        >
+                            View All Orders
+                        </button>
+                    </div>
+
+                    <div class="unified-table-wrapper">
+
+                        <table class="unified-admin-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Reference</th>
+                                    <th>Customer</th>
+                                    <th>Material</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="dashboardRecentOrders"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Orders -->
+            <section
+                class="admin-view-panel hidden"
+                data-admin-panel="orders"
             >
-                <h3>No orders found</h3>
 
-                <p>
-                    Submit a test order through the public order page.
+                <div class="admin-panel-heading">
+
+                    <div>
+                        <p class="section-label">Order management</p>
+                        <h1>Customer Orders</h1>
+
+                        <p>
+                            View customer information and manage order progress.
+                        </p>
+                    </div>
+
+                    <div class="admin-heading-buttons">
+
+                        <button
+                            type="button"
+                            class="admin-secondary-action"
+                            id="exportUnifiedOrders"
+                        >
+                            Export CSV
+                        </button>
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                            id="refreshUnifiedOrders"
+                        >
+                            Refresh Orders
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="unified-admin-toolbar">
+
+                    <label for="unifiedOrderSearch">
+                        Search orders
+                    </label>
+
+                    <input
+                        type="search"
+                        id="unifiedOrderSearch"
+                        placeholder="Search by reference, customer, phone or material"
+                    >
+
+                </div>
+
+
+                <p
+                    class="unified-content-message"
+                    id="unifiedOrdersMessage"
+                >
+                    Loading orders...
                 </p>
-            </div>
 
 
-            <div
-                class="admin-table-container"
-                id="adminTableContainer"
+                <div
+                    class="unified-table-wrapper hidden"
+                    id="unifiedOrdersTableWrapper"
+                >
+
+                    <table class="unified-admin-table unified-orders-table">
+
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Customer</th>
+                                <th>Order</th>
+                                <th>Delivery</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="unifiedOrdersTableBody"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- Materials -->
+            <section
+                class="admin-view-panel hidden"
+                data-admin-panel="materials"
             >
 
-                <table class="admin-orders-table">
+                <div class="admin-panel-heading">
 
-                    <thead>
-                        <tr>
-                            <th>Reference</th>
-                            <th>Customer</th>
-                            <th>Material</th>
-                            <th>Delivery</th>
-                            <th>Date Submitted</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                    <div>
+                        <p class="section-label">Catalogue management</p>
+                        <h1>Construction Materials</h1>
 
-                    <tbody id="ordersTableBody"></tbody>
+                        <p>
+                            Add material categories, brands, prices and availability.
+                        </p>
+                    </div>
 
-                </table>
+                    <a
+                        href="materials.html"
+                        target="_blank"
+                        rel="noopener"
+                        class="admin-secondary-action"
+                    >
+                        View Public Registry
+                    </a>
 
-            </div>
+                </div>
 
-        </section>
+
+                <div class="unified-materials-layout">
+
+                    <!-- Material form -->
+                    <form
+                        class="unified-material-form"
+                        id="unifiedMaterialForm"
+                    >
+
+                        <p class="section-label">
+                            Add or edit material
+                        </p>
+
+                        <h2 id="unifiedMaterialFormTitle">
+                            Add Construction Material
+                        </h2>
+
+
+                        <div class="form-group">
+
+                            <label for="unifiedMaterialName">
+                                Material Category
+                            </label>
+
+                            <input
+                                type="text"
+                                id="unifiedMaterialName"
+                                placeholder="Example: Cement"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="unifiedMaterialType">
+                                Brand / Type
+                            </label>
+
+                            <input
+                                type="text"
+                                id="unifiedMaterialType"
+                                placeholder="Example: Bamburi Powermax 42.5N"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="unifiedMaterialAvailability">
+                                Availability
+                            </label>
+
+                            <select
+                                id="unifiedMaterialAvailability"
+                                required
+                            >
+                                <option value="Available">
+                                    Available
+                                </option>
+
+                                <option value="Low Stock">
+                                    Low Stock
+                                </option>
+
+                                <option value="Out of Stock">
+                                    Out of Stock
+                                </option>
+
+                                <option value="Coming Soon">
+                                    Coming Soon
+                                </option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="unified-price-fields">
+
+                            <div class="form-group">
+
+                                <label for="unifiedMaterialPrice">
+                                    Price in KES
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="unifiedMaterialPrice"
+                                    min="0"
+                                    step="0.01"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="unifiedMaterialUnit">
+                                    Pricing Unit
+                                </label>
+
+                                <select
+                                    id="unifiedMaterialUnit"
+                                    required
+                                >
+                                    <option value="">
+                                        Select unit
+                                    </option>
+
+                                    <option value="Per bag">
+                                        Per bag
+                                    </option>
+
+                                    <option value="Per tonne">
+                                        Per tonne
+                                    </option>
+
+                                    <option value="Per truck load">
+                                        Per truck load
+                                    </option>
+
+                                    <option value="Per cubic metre">
+                                        Per cubic metre
+                                    </option>
+
+                                    <option value="Per piece">
+                                        Per piece
+                                    </option>
+
+                                    <option value="Per pallet">
+                                        Per pallet
+                                    </option>
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="unifiedMaterialDescription">
+                                Description
+                            </label>
+
+                            <textarea
+                                id="unifiedMaterialDescription"
+                                rows="4"
+                                placeholder="Enter specifications or additional information"
+                            ></textarea>
+
+                        </div>
+
+
+                        <label class="unified-active-checkbox">
+
+                            <input
+                                type="checkbox"
+                                id="unifiedMaterialActive"
+                                checked
+                            >
+
+                            <span>
+                                Display on the public materials registry
+                            </span>
+
+                        </label>
+
+
+                        <div class="unified-form-buttons">
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                                id="saveUnifiedMaterial"
+                            >
+                                Save Material
+                            </button>
+
+                            <button
+                                type="button"
+                                class="admin-secondary-action hidden"
+                                id="cancelUnifiedMaterialEdit"
+                            >
+                                Cancel Edit
+                            </button>
+
+                        </div>
+
+                        <p
+                            id="unifiedMaterialFormMessage"
+                            class="unified-admin-message"
+                            aria-live="polite"
+                        ></p>
+
+                    </form>
+
+
+                    <!-- Materials table -->
+                    <div class="unified-material-registry">
+
+                        <div class="unified-admin-toolbar">
+
+                            <label for="unifiedMaterialSearch">
+                                Search materials
+                            </label>
+
+                            <div class="unified-toolbar-row">
+
+                                <input
+                                    type="search"
+                                    id="unifiedMaterialSearch"
+                                    placeholder="Search category, brand or availability"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="admin-secondary-action"
+                                    id="refreshUnifiedMaterials"
+                                >
+                                    Refresh
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <p
+                            class="unified-content-message"
+                            id="unifiedMaterialsMessage"
+                        >
+                            Loading materials...
+                        </p>
+
+
+                        <div
+                            class="unified-table-wrapper hidden"
+                            id="unifiedMaterialsTableWrapper"
+                        >
+
+                            <table class="unified-admin-table">
+
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Brand / Type</th>
+                                        <th>Availability</th>
+                                        <th>Price</th>
+                                        <th>Unit</th>
+                                        <th>Public</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="unifiedMaterialsTableBody"></tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
 
     </main>
 
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="js/admin-dashboard.js"></script>
 
 </body>
 </html>
