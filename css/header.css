@@ -1,0 +1,170 @@
+/* =========================================
+   SUMMIT STRUCTURE SUPPLIES
+   SMOOTH SCROLL HEADER
+========================================= */
+
+:root {
+    --summit-header-expanded: 250px;
+    --summit-header-compact: 76px;
+}
+
+/* Keep page content below the large header */
+body:not(.admin-body) {
+    padding-top: var(--summit-header-expanded);
+}
+
+/* Fixed header */
+.site-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 3000;
+
+    width: 100%;
+    height: var(--header-height, 250px);
+
+    background-color: #111111;
+    border-bottom: 3px solid #f7941d;
+
+    transition:
+        background-color 0.35s ease,
+        box-shadow 0.35s ease,
+        backdrop-filter 0.35s ease;
+}
+
+.site-header.header-moving {
+    background-color: rgba(17, 17, 17, 0.97);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(8px);
+}
+
+/* Header container */
+.site-header .navigation {
+    position: relative !important;
+    display: block !important;
+    width: min(1120px, 92%) !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible;
+}
+
+/* Logo holder */
+.site-header .brand.centered-brand {
+    position: absolute !important;
+    left: var(--logo-left, calc(50% - 90px)) !important;
+    top: var(--logo-top, 16px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    z-index: 3;
+}
+
+/* Trimmed circular logo */
+.site-header .brand-logo-image {
+    display: block !important;
+    width: var(--logo-size, 180px) !important;
+    height: var(--logo-size, 180px) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+
+    object-fit: cover;
+    object-position: center;
+
+    border-radius: 50%;
+    clip-path: circle(48.5% at 50% 50%);
+
+    transition: none !important;
+}
+
+/* Navigation */
+.site-header .nav-links {
+    position: absolute !important;
+    left: var(--nav-left, 50%) !important;
+    top: var(--nav-top, 214px) !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+
+    width: var(--nav-width, max-content) !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 28px;
+    flex-wrap: nowrap !important;
+
+    transform: none !important;
+    transition: none !important;
+
+    z-index: 2;
+}
+
+.site-header .nav-links a {
+    width: auto !important;
+    flex: 0 0 auto;
+    padding: 8px 4px;
+    white-space: nowrap;
+    text-align: center;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.site-header .nav-links a:hover {
+    color: #f7941d;
+}
+
+.site-header .nav-button {
+    padding: 11px 20px !important;
+    background-color: #f7941d;
+    color: #111111 !important;
+    border-radius: 7px;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+    :root {
+        --summit-header-expanded: 220px;
+        --summit-header-compact: 68px;
+    }
+
+    body:not(.admin-body) {
+        padding-top: var(--summit-header-expanded);
+    }
+
+    .site-header {
+        height: var(--header-height, 220px);
+    }
+
+    .site-header .navigation {
+        width: 94% !important;
+    }
+
+    .site-header .nav-links {
+        gap: 13px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+    }
+
+    .site-header .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .site-header .nav-links a {
+        padding: 7px 4px;
+    }
+
+    .site-header .nav-button {
+        padding: 9px 13px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-header {
+        transition: none;
+    }
+}
