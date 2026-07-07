@@ -16,37 +16,36 @@
     <title>Order Materials | Summit Structure Supplies</title>
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/header.css">
 </head>
 
 <body>
 
-    <!-- Header -->
-    
-    <header class="site-header">
-        <div class="container navigation">
+<header class="site-header smooth-sticky-header">
+    <div class="container navigation">
 
-            <a href="index.html" class="brand centered-brand">
-                <img
-                    src="assets/images/logo.png"
-                    alt="Summit Structure Supplies logo"
-                    class="brand-logo-image"
-                >
-            </a>
-
-            <nav class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="index.html#materials">Materials</a>
-                <a href="index.html#about">About</a>
-                <a href="index.html#contact">Contact</a>
-                <a href="order.html" class="nav-button">Order Now</a>
-            </nav>
-
+        <div class="brand centered-brand" aria-label="Summit Structure Supplies">
+            <img
+                src="assets/images/logo.png"
+                alt="Summit Structure Supplies logo"
+                class="brand-logo-image"
+            >
         </div>
-    </header>
 
+        <nav class="nav-links" aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="index.html#materials">Materials</a>
+            <a href="index.html#about">About</a>
+            <a href="index.html#contact">Contact</a>
+            <a href="order.html" class="nav-button">Order Now</a>
+        </nav>
 
+    </div>
+</header>
 
-    <main>
+<!-- Header -->
+
+<main>
 
         <!-- Page heading -->
         <section class="order-hero">
@@ -523,7 +522,10 @@
 
 
     <!-- Main JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/header.js"></script>
 
 </body>
 </html>

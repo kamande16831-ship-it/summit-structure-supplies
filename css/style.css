@@ -1579,3 +1579,426 @@ textarea {
         height: 145px;
     }
 }
+
+/* Order submission loading state */
+
+.loading-message {
+    color: #805300;
+    background-color: #fff4d6;
+    border: 1px solid #e8c46c;
+    border-radius: 7px;
+    padding: 12px 15px;
+}
+
+.order-submit-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* =========================
+   SCROLLING COMPACT HEADER
+========================= */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #111111;
+    border-bottom: 3px solid #f7941d;
+    transition:
+        box-shadow 0.3s ease,
+        background-color 0.3s ease;
+}
+
+/* Large centered header before scrolling */
+
+.site-header .navigation {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px 0;
+    transition:
+        padding 0.3s ease,
+        min-height 0.3s ease;
+}
+
+.site-header .brand.centered-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.site-header .brand-logo-image {
+    width: 180px;
+    height: 180px;
+    max-width: none;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    clip-path: circle(49% at 50% 50%);
+    transition:
+        width 0.3s ease,
+        height 0.3s ease,
+        transform 0.3s ease;
+}
+
+.site-header .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 28px;
+    transition:
+        gap 0.3s ease,
+        margin 0.3s ease;
+}
+
+
+/* Small horizontal header after scrolling */
+
+.site-header.header-compact {
+    background-color: rgba(17, 17, 17, 0.97);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+}
+
+.site-header.header-compact .navigation {
+    min-height: 72px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 7px 0;
+}
+
+.site-header.header-compact .brand.centered-brand {
+    flex: 0 0 auto;
+    margin-right: auto;
+}
+
+.site-header.header-compact .brand-logo-image {
+    width: 58px;
+    height: 58px;
+    transform: scale(1);
+}
+
+.site-header.header-compact .nav-links {
+    margin-left: auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 22px;
+}
+
+.site-header.header-compact .nav-links a {
+    white-space: nowrap;
+}
+
+.site-header.header-compact .nav-button {
+    padding: 10px 18px;
+}
+
+
+/* Mobile scrolling header */
+
+@media (max-width: 760px) {
+
+    .site-header .brand-logo-image {
+        width: 145px;
+        height: 145px;
+    }
+
+    .site-header.header-compact .navigation {
+        width: 94%;
+        min-height: 64px;
+        flex-direction: row;
+        gap: 12px;
+        padding: 6px 0;
+    }
+
+    .site-header.header-compact .brand-logo-image {
+        width: 50px;
+        height: 50px;
+    }
+
+    .site-header.header-compact .nav-links {
+        flex: 1;
+        width: auto;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 12px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .site-header.header-compact .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .site-header.header-compact .nav-links a {
+        width: auto;
+        flex: 0 0 auto;
+        padding: 8px 5px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .site-header.header-compact .nav-button {
+        padding: 9px 13px;
+    }
+}
+
+
+/* Reduce animation for users who prefer it */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .site-header,
+    .site-header .navigation,
+    .site-header .brand-logo-image,
+    .site-header .nav-links {
+        transition: none;
+    }
+}
+
+/* =========================
+   GRADUAL SCROLL HEADER
+========================= */
+
+/*
+The JavaScript supplies continuously changing dimensions.
+These rules remove the abrupt row/column layout switch.
+*/
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #111111;
+    border-bottom: 3px solid #f7941d;
+    transition:
+        background-color 0.35s ease,
+        box-shadow 0.35s ease,
+        backdrop-filter 0.35s ease;
+}
+
+.site-header.is-scrolled {
+    background-color: rgba(17, 17, 17, 0.97);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.site-header .navigation {
+    position: relative;
+    display: block !important;
+    padding: 0 !important;
+    overflow: visible;
+    transition: none !important;
+}
+
+.site-header .brand.centered-brand {
+    position: absolute;
+    z-index: 3;
+    margin: 0 !important;
+    transition: none !important;
+    will-change:
+        left,
+        top,
+        transform;
+}
+
+.site-header .brand-logo-image {
+    display: block;
+    max-width: none !important;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    clip-path: circle(49% at 50% 50%);
+    transition: none !important;
+    will-change:
+        width,
+        height;
+}
+
+.site-header .nav-links {
+    position: absolute;
+    z-index: 2;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    gap: 28px;
+    margin: 0 !important;
+    transition: none !important;
+    will-change:
+        left,
+        top,
+        width,
+        transform;
+}
+
+.site-header .nav-links a {
+    width: auto !important;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.site-header .nav-button {
+    padding: 11px 20px;
+}
+
+
+/* Mobile gradual header */
+
+@media (max-width: 760px) {
+
+    .site-header .navigation {
+        width: 94%;
+    }
+
+    .site-header .nav-links {
+        justify-content: flex-start;
+        gap: 13px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+    }
+
+    .site-header .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .site-header .nav-links a {
+        padding: 8px 5px;
+    }
+
+    .site-header .nav-button {
+        padding: 9px 13px;
+    }
+}
+
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .site-header {
+        transition: none;
+    }
+}
+
+/* =========================
+   FINAL SMOOTH STICKY HEADER
+========================= */
+
+.smooth-sticky-header {
+    position: sticky !important;
+    top: 0;
+    z-index: 2000;
+    width: 100%;
+    background-color: #111111;
+    border-bottom: 3px solid #f7941d;
+    transition:
+        background-color 0.25s ease,
+        box-shadow 0.25s ease,
+        backdrop-filter 0.25s ease;
+}
+
+.smooth-sticky-header.is-scrolled {
+    background-color: rgba(17, 17, 17, 0.97);
+    box-shadow: 0 7px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(9px);
+}
+
+.smooth-sticky-header .navigation {
+    position: relative !important;
+    display: block !important;
+    width: min(1120px, 90%) !important;
+    height: var(--header-height, 260px) !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible;
+}
+
+.smooth-sticky-header .centered-brand {
+    position: absolute !important;
+    left: var(--logo-left, calc(50% - 90px)) !important;
+    top: var(--logo-top, 16px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    z-index: 3;
+}
+
+.smooth-sticky-header .brand-logo-image {
+    display: block !important;
+    width: var(--logo-size, 180px) !important;
+    height: var(--logo-size, 180px) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    clip-path: circle(49% at 50% 50%);
+    transition: none !important;
+}
+
+.smooth-sticky-header .nav-links {
+    position: absolute !important;
+    left: var(--links-center, 50%) !important;
+    top: var(--links-top, 214px) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap !important;
+    width: max-content !important;
+    max-width: none !important;
+    margin: 0 !important;
+    gap: 28px;
+    transform: translateX(-50%) !important;
+    transition: none !important;
+    z-index: 2;
+}
+
+.smooth-sticky-header .nav-links a {
+    width: auto !important;
+    flex: 0 0 auto;
+    padding: 8px 4px;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.smooth-sticky-header .nav-button {
+    padding: 11px 20px !important;
+}
+
+@media (max-width: 760px) {
+
+    .smooth-sticky-header .navigation {
+        width: 94% !important;
+        height: var(--header-height, 230px) !important;
+    }
+
+    .smooth-sticky-header .nav-links {
+        gap: 13px;
+        max-width: calc(100vw - 85px) !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+    }
+
+    .smooth-sticky-header .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .smooth-sticky-header .nav-button {
+        padding: 9px 13px !important;
+    }
+}

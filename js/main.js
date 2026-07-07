@@ -1,6 +1,9 @@
 "use strict";
 
+let summitDatabase = null;
+
 document.addEventListener("DOMContentLoaded", function () {
+    initializeSupabase();
     setCurrentYear();
     setMinimumDeliveryDate();
     setupOrderForm();
@@ -8,8 +11,43 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+/*
+=================================
+SUPABASE CONNECTION
+=================================
+*/
+
+function initializeSupabase() {
+    if (
+        !window.supabase ||
+        !window.SUMMIT_SUPABASE_URL ||
+        !window.SUMMIT_SUPABASE_KEY
+    ) {
+        console.error(
+            "Supabase could not be initialized. Check the script files."
+        );
+
+        return;
+    }
+
+    summitDatabase = window.supabase.createClient(
+        window.SUMMIT_SUPABASE_URL,
+        window.SUMMIT_SUPABASE_KEY
+    );
+
+    console.log("Supabase connection initialized.");
+}
+
+
+/*
+=================================
+CURRENT YEAR
+=================================
+*/
+
 function setCurrentYear() {
-    const yearElements = document.querySelectorAll(".current-year");
+    const yearElements =
+        document.querySelectorAll(".current-year");
 
     yearElements.forEach(function (element) {
         element.textContent = new Date().getFullYear();
@@ -17,153 +55,318 @@ function setCurrentYear() {
 }
 
 
+/*
+=================================
+MINIMUM DELIVERY DATE
+=================================
+*/
+
 function setMinimumDeliveryDate() {
-    const deliveryDateInput = document.getElementById("deliveryDate");
+    const deliveryDateInput =
+        document.getElementById("deliveryDate");
 
     if (!deliveryDateInput) {
         return;
     }
 
     const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
 
-    deliveryDateInput.min = `${year}-${month}-${day}`;
+    const year = today.getFullYear();
+
+    const month = String(
+        today.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+        today.getDate()
+    ).padStart(2, "0");
+
+    deliveryDateInput.min =
+        `${year}-${month}-${day}`;
 }
 
 
+/*
+=================================
+ORDER FORM
+=================================
+*/
+
 function setupOrderForm() {
-    const orderForm = document.getElementById("orderForm");
-    const orderMessage = document.getElementById("orderMessage");
+    const orderForm =
+        document.getElementById("orderForm");
+
+    const orderMessage =
+        document.getElementById("orderMessage");
 
     if (!orderForm || !orderMessage) {
         return;
     }
 
-    orderForm.addEventListener("submit", function (event) {
-        event.preventDefault();
+    orderForm.addEventListener(
+        "submit",
+        async function (event) {
+            event.preventDefault();
 
-        const orderData = {
-            reference: createOrderReference(),
+            if (!summitDatabase) {
+                showOrderMessage(
+                    orderMessage,
+                    "The ordering system is unavailable. Please refresh the page and try again.",
+                    "error"
+                );
 
-            customerName: document
-                .getElementById("customerName")
-                .value
-                .trim(),
+                return;
+            }
 
-            phoneNumber: document
-                .getElementById("phoneNumber")
-                .value
-                .trim(),
+            const submitButton =
+                orderForm.querySelector(
+                    'button[type="submit"]'
+                );
 
-            emailAddress: document
-                .getElementById("emailAddress")
-                .value
-                .trim(),
+            const originalButtonText =
+                submitButton.textContent;
 
-            materialType: document
-                .getElementById("materialType")
-                .value,
+            submitButton.disabled = true;
+            submitButton.textContent =
+                "Submitting Order...";
 
-            quantity: document
-                .getElementById("quantity")
-                .value,
+            showOrderMessage(
+                orderMessage,
+                "Submitting your order...",
+                "loading"
+            );
 
-            measurementUnit: document
-                .getElementById("measurementUnit")
-                .value,
+            const reference =
+                createOrderReference();
 
-            deliveryLocation: document
-                .getElementById("deliveryLocation")
-                .value
-                .trim(),
+            const orderData = {
+                reference: reference,
 
-            deliveryDate: document
-                .getElementById("deliveryDate")
-                .value,
+                customer_name: document
+                    .getElementById("customerName")
+                    .value
+                    .trim(),
 
-            projectType: document
-                .getElementById("projectType")
-                .value,
+                phone_number: document
+                    .getElementById("phoneNumber")
+                    .value
+                    .trim(),
 
-            orderNotes: document
-                .getElementById("orderNotes")
-                .value
-                .trim(),
+                email_address: document
+                    .getElementById("emailAddress")
+                    .value
+                    .trim() || null,
 
-            submittedAt: new Date().toISOString()
-        };
+                material_type: document
+                    .getElementById("materialType")
+                    .value,
 
-        saveOrder(orderData);
+                quantity: Number(
+                    document
+                        .getElementById("quantity")
+                        .value
+                ),
 
-        orderMessage.textContent =
-            `Order received successfully. Reference: ${orderData.reference}`;
+                measurement_unit: document
+                    .getElementById("measurementUnit")
+                    .value,
 
-        orderMessage.className =
-            "order-message success-message";
+                delivery_location: document
+                    .getElementById("deliveryLocation")
+                    .value
+                    .trim(),
 
-        orderForm.reset();
-        setMinimumDeliveryDate();
-    });
-}
+                delivery_date: document
+                    .getElementById("deliveryDate")
+                    .value,
 
+                project_type: document
+                    .getElementById("projectType")
+                    .value,
 
-function createOrderReference() {
-    const date = new Date();
+                order_notes: document
+                    .getElementById("orderNotes")
+                    .value
+                    .trim() || null,
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const randomNumber = Math.floor(1000 + Math.random() * 9000);
+                status: "New"
+            };
 
-    return `SSS-${year}${month}${day}-${randomNumber}`;
-}
+            try {
+                const result = await summitDatabase
+                    .from("orders")
+                    .insert(orderData);
 
+                if (result.error) {
+                    throw result.error;
+                }
 
-function saveOrder(orderData) {
-    const savedOrders =
-        JSON.parse(localStorage.getItem("summitOrders")) || [];
+                showOrderMessage(
+                    orderMessage,
+                    `Order submitted successfully. Your reference is ${reference}.`,
+                    "success"
+                );
 
-    savedOrders.push(orderData);
+                orderForm.reset();
+                setMinimumDeliveryDate();
 
-    localStorage.setItem(
-        "summitOrders",
-        JSON.stringify(savedOrders)
+            } catch (error) {
+                console.error(
+                    "Order submission failed:",
+                    error
+                );
+
+                showOrderMessage(
+                    orderMessage,
+                    "Your order could not be submitted. Please check your internet connection and try again.",
+                    "error"
+                );
+
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent =
+                    originalButtonText;
+            }
+        }
     );
 }
 
 
+/*
+=================================
+ORDER REFERENCE
+=================================
+*/
+
+function createOrderReference() {
+    const date = new Date();
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
+
+    const time =
+        String(date.getHours())
+            .padStart(2, "0") +
+        String(date.getMinutes())
+            .padStart(2, "0");
+
+    const randomNumber =
+        Math.floor(
+            1000 + Math.random() * 9000
+        );
+
+    return (
+        `SSS-${year}${month}${day}-` +
+        `${time}-${randomNumber}`
+    );
+}
+
+
+/*
+=================================
+ORDER RESPONSE MESSAGE
+=================================
+*/
+
+function showOrderMessage(
+    element,
+    message,
+    type
+) {
+    element.textContent = message;
+
+    element.classList.remove(
+        "success-message",
+        "error-message",
+        "loading-message"
+    );
+
+    if (type === "success") {
+        element.classList.add(
+            "success-message"
+        );
+    } else if (type === "error") {
+        element.classList.add(
+            "error-message"
+        );
+    } else {
+        element.classList.add(
+            "loading-message"
+        );
+    }
+}
+
+
+/*
+=================================
+CALLBACK FORM
+=================================
+*/
+
 function setupCallbackForm() {
-    const callbackForm = document.querySelector(".contact-form");
+    const callbackForm =
+        document.querySelector(".contact-form");
 
     if (!callbackForm) {
         return;
     }
 
-    const responseMessage = document.createElement("p");
+    let responseMessage =
+        callbackForm.querySelector(
+            ".callback-message"
+        );
 
-    responseMessage.className = "callback-message";
-
-    callbackForm.appendChild(responseMessage);
-
-    callbackForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-
-        const nameInput = callbackForm.querySelector("#name");
-
-        if (!nameInput) {
-            return;
-        }
-
-        const name = nameInput.value.trim();
-
-        responseMessage.textContent =
-            `Thank you, ${name}. Your callback request has been recorded.`;
+    if (!responseMessage) {
+        responseMessage =
+            document.createElement("p");
 
         responseMessage.className =
-            "callback-message success-message";
+            "callback-message";
 
-        callbackForm.reset();
-    });
+        callbackForm.appendChild(
+            responseMessage
+        );
+    }
+
+    callbackForm.addEventListener(
+        "submit",
+        function (event) {
+            event.preventDefault();
+
+            const nameInput =
+                callbackForm.querySelector("#name");
+
+            if (!nameInput) {
+                return;
+            }
+
+            const name =
+                nameInput.value.trim();
+
+            responseMessage.textContent =
+                `Thank you, ${name}. Your callback request has been recorded.`;
+
+            responseMessage.className =
+                "callback-message success-message";
+
+            callbackForm.reset();
+        }
+    );
 }
+
+
+/*
+=================================
+COMPACT STICKY HEADER
+=================================
+*/
+
+

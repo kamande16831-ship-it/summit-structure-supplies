@@ -3,34 +3,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <script>
-        /*
-        Open the homepage directly as /index.html
-        instead of requiring a logo click.
-        */
-        if (window.location.pathname.endsWith("/")) {
-            window.location.replace(
-                window.location.pathname +
-                "index.html" +
-                window.location.search
-            );
-        }
-
-        /*
-        Always begin at the top of the homepage.
-        */
-        if ("scrollRestoration" in history) {
-            history.scrollRestoration = "manual";
-        }
-
-        window.addEventListener(
-            "load",
-            function () {
-                window.scrollTo(0, 0);
-            },
-            { once: true }
-        );
-    </script>
+    
 
 
     <meta
@@ -54,13 +27,13 @@
 <header class="site-header smooth-sticky-header">
     <div class="container navigation">
 
-        <a href="index.html" class="brand centered-brand">
+        <div class="brand centered-brand" aria-label="Summit Structure Supplies">
             <img
                 src="assets/images/logo.png"
                 alt="Summit Structure Supplies logo"
                 class="brand-logo-image"
             >
-        </a>
+        </div>
 
         <nav class="nav-links" aria-label="Main navigation">
             <a href="#home">Home</a>

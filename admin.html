@@ -57,11 +57,13 @@
                 </p>
 
                 <div class="form-group">
-                    <label for="adminUsername">Username</label>
+                    <label for="adminUsername">Administrator Email</label>
 
                     <input
-                        type="text"
+                        type="email"
                         id="adminUsername"
+                        placeholder="admin@example.com"
+                        autocomplete="username"
                         required
                     >
                 </div>
@@ -218,6 +220,8 @@
 
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
     <script src="js/admin.js"></script>
 
 </body>
