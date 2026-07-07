@@ -1,101 +1,37 @@
 "use strict";
 
-/*
-=========================================
-START HOMEPAGE AT EXPANDED HEADER
-=========================================
-*/
-
-function forceHomePageTop() {
-    const currentPath =
-        window.location.pathname;
-
-    const isHomePage =
-        currentPath.endsWith("/") ||
-        currentPath.endsWith("/index.html");
-
-    const isHomeHash =
-        window.location.hash === "#home";
-
-    if (
-        !isHomePage ||
-        (
-            window.location.hash &&
-            !isHomeHash
-        )
-    ) {
-        return;
-    }
-
-    if (
-        "scrollRestoration" in
-        window.history
-    ) {
-        window.history.scrollRestoration =
-            "manual";
-    }
-
-    if (isHomeHash) {
-        window.history.replaceState(
-            null,
-            "",
-            currentPath +
-            window.location.search
-        );
-    }
-
-    window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "auto"
-    });
-}
-
-forceHomePageTop();
-
 document.addEventListener(
     "DOMContentLoaded",
-    forceHomePageTop
+    initializeScrollingHeader
 );
 
-window.addEventListener(
-    "pageshow",
-    forceHomePageTop
-);
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeSmoothHeader
-);
-
-function initializeSmoothHeader() {
+function initializeScrollingHeader() {
     const header =
         document.querySelector(".site-header");
 
-    if (!header) {
-        return;
-    }
-
     const navigation =
-        header.querySelector(".navigation");
+        header?.querySelector(".navigation");
 
-    const brand =
-        header.querySelector(".centered-brand");
+    const logoHolder =
+        header?.querySelector(".centered-brand");
 
     const logo =
-        header.querySelector(".brand-logo-image");
+        header?.querySelector(".brand-logo-image");
 
     const links =
-        header.querySelector(".nav-links");
+        header?.querySelector(".nav-links");
 
-    if (!navigation || !brand || !logo || !links) {
+    if (
+        !header ||
+        !navigation ||
+        !logoHolder ||
+        !logo ||
+        !links
+    ) {
         return;
     }
 
-    let currentProgress = 0;
-    let targetProgress = 0;
-    let animationFrame = null;
+    let frameRequested = false;
 
     function clamp(value, minimum, maximum) {
         return Math.min(
@@ -105,26 +41,27 @@ function initializeSmoothHeader() {
     }
 
     function interpolate(start, end, progress) {
-        return start + ((end - start) * progress);
+        return start + (end - start) * progress;
     }
 
     function smoothstep(progress) {
         return (
             progress *
             progress *
-            (3 - (2 * progress))
+            (3 - 2 * progress)
         );
     }
 
-    function getTargetProgress() {
+    function updateHeader() {
         const mobile =
             window.innerWidth <= 760;
 
         /*
-        Longer distance = smoother gradual transition
+        The full transition occurs over this
+        scroll distance.
         */
         const transitionDistance =
-            mobile ? 220 : 300;
+            mobile ? 240 : 340;
 
         const rawProgress = clamp(
             window.scrollY / transitionDistance,
@@ -132,32 +69,35 @@ function initializeSmoothHeader() {
             1
         );
 
-        return smoothstep(rawProgress);
-    }
-
-    function renderHeader(progress) {
-        const mobile =
-            window.innerWidth <= 760;
+        const progress =
+            smoothstep(rawProgress);
 
         const containerWidth =
             navigation.clientWidth;
 
-        /* Expanded state */
+
+        /* Expanded header values */
+
         const expandedHeaderHeight =
-            mobile ? 220 : 250;
+            mobile ? 205 : 220;
 
         const expandedLogoSize =
-            mobile ? 145 : 180;
+            mobile ? 105 : 120;
 
         const expandedLogoTop =
-            mobile ? 12 : 16;
+            mobile ? 14 : 18;
 
-        /* Compact state */
+        const expandedLogoCenter =
+            containerWidth / 2;
+
+
+        /* Compact header values */
+
         const compactHeaderHeight =
             mobile ? 68 : 76;
 
         const compactLogoSize =
-            mobile ? 48 : 58;
+            mobile ? 46 : 52;
 
         const compactLogoTop =
             (
@@ -165,126 +105,114 @@ function initializeSmoothHeader() {
                 compactLogoSize
             ) / 2;
 
-        /* Header height */
-        const headerHeight = interpolate(
-            expandedHeaderHeight,
-            compactHeaderHeight,
-            progress
-        );
+        const compactLogoCenter =
+            compactLogoSize / 2;
 
-        /* Logo size and position */
-        const logoSize = interpolate(
-            expandedLogoSize,
-            compactLogoSize,
-            progress
-        );
 
-        const expandedLogoLeft =
-            (
-                containerWidth -
-                expandedLogoSize
-            ) / 2;
+        /* Header size */
 
-        const compactLogoLeft = 0;
+        const headerHeight =
+            interpolate(
+                expandedHeaderHeight,
+                compactHeaderHeight,
+                progress
+            );
 
-        const logoLeft = interpolate(
-            expandedLogoLeft,
-            compactLogoLeft,
-            progress
-        );
 
-        const logoTop = interpolate(
-            expandedLogoTop,
-            compactLogoTop,
-            progress
-        );
+        /* Logo movement */
 
-        /* Measure nav */
-        const naturalNavWidth =
+        const logoSize =
+            interpolate(
+                expandedLogoSize,
+                compactLogoSize,
+                progress
+            );
+
+        const logoTop =
+            interpolate(
+                expandedLogoTop,
+                compactLogoTop,
+                progress
+            );
+
+        const logoCenter =
+            interpolate(
+                expandedLogoCenter,
+                compactLogoCenter,
+                progress
+            );
+
+
+        /* Navigation movement */
+
+        const naturalLinksWidth =
             links.scrollWidth;
 
-        const navHeight =
+        const linksHeight =
             links.offsetHeight;
 
-        const expandedNavTop =
-            expandedLogoTop +
-            expandedLogoSize +
-            (mobile ? 14 : 18);
+        const expandedLinksTop =
+            expandedHeaderHeight -
+            linksHeight -
+            (mobile ? 12 : 16);
 
-        const compactNavTop =
+        const compactLinksTop =
             (
                 compactHeaderHeight -
-                navHeight
+                linksHeight
             ) / 2;
 
-        const navTop = interpolate(
-            expandedNavTop,
-            compactNavTop,
-            progress
-        );
+        const linksTop =
+            interpolate(
+                expandedLinksTop,
+                compactLinksTop,
+                progress
+            );
 
-        let navLeft;
-        let navWidth;
+        const expandedLinksCenter =
+            containerWidth / 2;
+
+        let compactLinksCenter;
+        let linksWidth;
 
         if (mobile) {
-            const expandedNavWidth =
-                Math.min(
-                    naturalNavWidth,
-                    containerWidth
-                );
-
-            const compactNavWidth =
-                Math.max(
-                    170,
-                    containerWidth -
-                    compactLogoSize -
-                    24
-                );
-
-            navWidth = interpolate(
-                expandedNavWidth,
-                compactNavWidth,
-                progress
+            linksWidth = Math.max(
+                175,
+                containerWidth -
+                compactLogoSize -
+                20
             );
 
-            const expandedNavLeft =
-                (
-                    containerWidth -
-                    expandedNavWidth
-                ) / 2;
-
-            const compactNavLeft =
-                compactLogoSize + 14;
-
-            navLeft = interpolate(
-                expandedNavLeft,
-                compactNavLeft,
-                progress
-            );
+            compactLinksCenter =
+                compactLogoSize +
+                14 +
+                linksWidth / 2;
         } else {
-            navWidth = naturalNavWidth;
+            linksWidth =
+                naturalLinksWidth;
 
-            const expandedNavLeft =
-                (
-                    containerWidth -
-                    navWidth
-                ) / 2;
-
-            const compactNavLeft =
+            const compactLinksLeft =
                 Math.max(
+                    compactLogoSize + 30,
                     containerWidth -
-                    navWidth,
-                    compactLogoSize + 28
+                    naturalLinksWidth
                 );
 
-            navLeft = interpolate(
-                expandedNavLeft,
-                compactNavLeft,
-                progress
-            );
+            compactLinksCenter =
+                compactLinksLeft +
+                naturalLinksWidth / 2;
         }
 
-        /* Apply values */
+        const linksCenter =
+            interpolate(
+                expandedLinksCenter,
+                compactLinksCenter,
+                progress
+            );
+
+
+        /* Apply calculated values */
+
         header.style.setProperty(
             "--header-height",
             `${headerHeight}px`
@@ -296,115 +224,70 @@ function initializeSmoothHeader() {
         );
 
         header.style.setProperty(
-            "--logo-left",
-            `${logoLeft}px`
-        );
-
-        header.style.setProperty(
             "--logo-top",
             `${logoTop}px`
         );
 
         header.style.setProperty(
-            "--nav-left",
-            `${navLeft}px`
+            "--logo-center",
+            `${logoCenter}px`
         );
 
         header.style.setProperty(
-            "--nav-top",
-            `${navTop}px`
+            "--navigation-top",
+            `${linksTop}px`
         );
 
         header.style.setProperty(
-            "--nav-width",
-            mobile
-                ? `${navWidth}px`
-                : `${navWidth}px`
+            "--navigation-center",
+            `${linksCenter}px`
+        );
+
+        header.style.setProperty(
+            "--navigation-width",
+            `${linksWidth}px`
         );
 
         header.classList.toggle(
-            "header-moving",
-            progress > 0.03
+            "header-compact",
+            rawProgress >= 0.98
+        );
+
+        header.classList.toggle(
+            "header-scrolling",
+            rawProgress > 0.02
+        );
+
+        frameRequested = false;
+    }
+
+    function requestHeaderUpdate() {
+        if (frameRequested) {
+            return;
+        }
+
+        frameRequested = true;
+
+        window.requestAnimationFrame(
+            updateHeader
         );
     }
 
-    /*
-    This creates gentle inertia so the movement
-    feels smoother than a hard snap.
-    */
-    function animateHeader() {
-        const distance =
-            targetProgress -
-            currentProgress;
-
-        currentProgress +=
-            distance * 0.14;
-
-        if (Math.abs(distance) < 0.001) {
-            currentProgress =
-                targetProgress;
-
-            renderHeader(currentProgress);
-            animationFrame = null;
-            return;
-        }
-
-        renderHeader(currentProgress);
-
-        animationFrame =
-            window.requestAnimationFrame(
-                animateHeader
-            );
-    }
-
-    function requestAnimation() {
-        targetProgress =
-            getTargetProgress();
-
-        if (animationFrame !== null) {
-            return;
-        }
-
-        animationFrame =
-            window.requestAnimationFrame(
-                animateHeader
-            );
-    }
-
-    currentProgress =
-        getTargetProgress();
-
-    targetProgress =
-        currentProgress;
-
-    renderHeader(currentProgress);
+    updateHeader();
 
     window.addEventListener(
         "scroll",
-        requestAnimation,
+        requestHeaderUpdate,
         { passive: true }
     );
 
     window.addEventListener(
         "resize",
-        function () {
-            currentProgress =
-                getTargetProgress();
-
-            targetProgress =
-                currentProgress;
-
-            renderHeader(currentProgress);
-        }
+        requestHeaderUpdate
     );
 
-    window.setTimeout(function () {
-        currentProgress =
-            getTargetProgress();
-
-        targetProgress =
-            currentProgress;
-
-        renderHeader(currentProgress);
-    }, 100);
+    window.addEventListener(
+        "pageshow",
+        requestHeaderUpdate
+    );
 }
