@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="View available construction materials and current prices from Summit Structure Supplies."
+    >
+
+    <title>Materials and Prices | Summit Structure Supplies</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/materials.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container navigation">
+
+            <div
+                class="brand centered-brand"
+                aria-label="Summit Structure Supplies"
+            >
+                <img
+                    src="assets/images/logo.png"
+                    alt="Summit Structure Supplies logo"
+                    class="brand-logo-image"
+                >
+            </div>
+
+            <nav
+                class="nav-links"
+                aria-label="Main navigation"
+            >
+                <a href="index.html">Home</a>
+
+                <a
+                    href="materials.html"
+                    aria-current="page"
+                >
+                    Materials
+                </a>
+
+                <a href="index.html#about">About</a>
+
+                <a href="index.html#contact">Contact</a>
+
+                <a
+                    href="order.html"
+                    class="nav-button"
+                >
+                    Order Now
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+
+    <main>
+
+        <section class="materials-registry-hero">
+            <div class="container">
+
+                <p class="section-label">
+                    Current material catalogue
+                </p>
+
+                <h1>
+                    Construction Materials, Brands and Prices
+                </h1>
+
+                <p>
+                    Review the available construction materials,
+                    material types, availability status and current
+                    prices before placing your order.
+                </p>
+
+            </div>
+        </section>
+
+
+        <section class="public-registry-section">
+
+            <div class="container">
+
+                <div class="registry-toolbar">
+
+                    <div>
+                        <h2>Available Materials</h2>
+
+                        <p>
+                            Prices are shown in Kenya shillings.
+                        </p>
+                    </div>
+
+                    <div class="registry-search">
+                        <label for="publicMaterialSearch">
+                            Search materials
+                        </label>
+
+                        <input
+                            type="search"
+                            id="publicMaterialSearch"
+                            placeholder="Search by material, brand, type or availability"
+                        >
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="registry-message"
+                    id="publicMaterialsMessage"
+                    aria-live="polite"
+                >
+                    Loading materials...
+                </div>
+
+
+                
+                <div
+                    class="public-material-groups hidden"
+                    id="publicMaterialsGroups"
+                ></div>
+
+
+
+                <div class="registry-order-action">
+                    <a
+                        href="order.html"
+                        class="primary-button"
+                    >
+                        Order Construction Materials
+                    </a>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="site-footer">
+
+        <div class="container footer-layout">
+
+            <div>
+                <h3>Summit Structure Supplies</h3>
+                <p>Equipment • Materials • Logistics</p>
+            </div>
+
+            <p>
+                &copy;
+                <span class="current-year">2026</span>
+                Summit Structure Supplies.
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/materials.js"></script>
+
+</body>
+</html>

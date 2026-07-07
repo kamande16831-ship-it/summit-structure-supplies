@@ -1,0 +1,487 @@
+/* =========================================
+   PUBLIC MATERIALS REGISTRY
+========================================= */
+
+.materials-registry-hero {
+    padding: 85px 0;
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.86),
+            rgba(0, 0, 0, 0.92)
+        ),
+        #111111;
+    color: #ffffff;
+    text-align: center;
+}
+
+.materials-registry-hero h1 {
+    margin-bottom: 18px;
+    font-size: clamp(38px, 6vw, 60px);
+    line-height: 1.1;
+}
+
+.materials-registry-hero > .container > p:last-child {
+    max-width: 760px;
+    margin: 0 auto;
+    color: #cccccc;
+    font-size: 18px;
+}
+
+.public-registry-section {
+    min-height: 600px;
+    padding: 80px 0;
+    background-color: #f5f5f5;
+}
+
+.registry-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.registry-toolbar h2 {
+    font-size: clamp(30px, 5vw, 44px);
+}
+
+.registry-toolbar p {
+    color: #666666;
+}
+
+.registry-search {
+    width: min(390px, 100%);
+    display: grid;
+    gap: 7px;
+}
+
+.registry-search label {
+    font-weight: 700;
+}
+
+.registry-search input,
+.materials-admin-search input {
+    min-height: 48px;
+    padding: 11px 14px;
+    border: 1px solid #cccccc;
+    border-radius: 7px;
+    background-color: #ffffff;
+}
+
+.public-materials-table-wrapper,
+.admin-materials-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.materials-registry-table {
+    width: 100%;
+    min-width: 950px;
+    border-collapse: collapse;
+}
+
+.materials-registry-table th,
+.materials-registry-table td {
+    padding: 18px;
+    border-bottom: 1px solid #e7e7e7;
+    text-align: left;
+    vertical-align: top;
+}
+
+.materials-registry-table th {
+    background-color: #171717;
+    color: #ffffff;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.materials-registry-table tbody tr:hover {
+    background-color: #fff8ef;
+}
+
+.material-price {
+    color: #bd6500;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.availability-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.availability-badge.available {
+    color: #17652b;
+    background-color: #dff5e4;
+}
+
+.availability-badge.low-stock {
+    color: #805300;
+    background-color: #fff0c2;
+}
+
+.availability-badge.out-of-stock {
+    color: #922929;
+    background-color: #ffe0e0;
+}
+
+.availability-badge.coming-soon {
+    color: #3e4d8f;
+    background-color: #e5e9ff;
+}
+
+.registry-message {
+    padding: 40px;
+    border: 2px dashed #cccccc;
+    border-radius: 12px;
+    background-color: #ffffff;
+    color: #666666;
+    text-align: center;
+    font-weight: 700;
+}
+
+.registry-message.registry-error {
+    color: #922929;
+    border-color: #d88c8c;
+    background-color: #fff0f0;
+}
+
+.registry-order-action {
+    margin-top: 35px;
+    text-align: center;
+}
+
+
+/* =========================================
+   MATERIALS ADMIN REGISTRY
+========================================= */
+
+.materials-admin-body {
+    min-height: 100vh;
+    background-color: #f2f2f2;
+}
+
+.materials-admin-header {
+    padding: 23px 0;
+    background-color: #111111;
+    color: #ffffff;
+    border-bottom: 4px solid #f7941d;
+}
+
+.materials-admin-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.materials-admin-header h1 {
+    font-size: clamp(25px, 5vw, 38px);
+}
+
+.materials-admin-main {
+    padding: 55px 0;
+}
+
+.materials-admin-login {
+    width: min(460px, 90%);
+    margin: 0 auto;
+}
+
+.materials-admin-dashboard {
+    display: block;
+}
+
+.materials-admin-navigation {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.materials-admin-navigation h2 {
+    font-size: clamp(32px, 5vw, 46px);
+}
+
+.materials-admin-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.materials-admin-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 0.7fr) minmax(0, 1.5fr);
+    gap: 30px;
+    align-items: start;
+}
+
+.material-entry-form {
+    position: sticky;
+    top: 25px;
+    padding: 30px;
+    border-radius: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.09);
+}
+
+.material-entry-form h3 {
+    margin-bottom: 23px;
+    font-size: 27px;
+}
+
+.material-entry-form .form-group {
+    margin-bottom: 17px;
+}
+
+.material-entry-form input,
+.material-entry-form select,
+.material-entry-form textarea {
+    width: 100%;
+    padding: 12px 13px;
+    border: 1px solid #cccccc;
+    border-radius: 7px;
+    background-color: #ffffff;
+}
+
+.material-entry-form input,
+.material-entry-form select {
+    min-height: 49px;
+}
+
+.material-entry-form textarea {
+    resize: vertical;
+}
+
+.materials-price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.material-active-control {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 15px 0 22px;
+    cursor: pointer;
+}
+
+.material-active-control input {
+    width: 18px;
+    height: 18px;
+    min-height: 0;
+    margin-top: 3px;
+    accent-color: #f7941d;
+}
+
+.material-form-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.material-form-message {
+    margin-top: 18px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.materials-admin-registry {
+    min-width: 0;
+}
+
+.materials-admin-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 21px;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+.materials-admin-toolbar h3 {
+    font-size: 25px;
+}
+
+.materials-admin-toolbar p {
+    color: #666666;
+}
+
+.materials-admin-search {
+    display: flex;
+    gap: 10px;
+}
+
+.material-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.material-edit-button,
+.material-delete-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.material-edit-button {
+    background-color: #3b3b3b;
+}
+
+.material-delete-button {
+    background-color: #a32a2a;
+}
+
+
+@media (max-width: 980px) {
+    .materials-admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .material-entry-form {
+        position: static;
+    }
+}
+
+
+@media (max-width: 760px) {
+    .registry-toolbar,
+    .materials-admin-navigation,
+    .materials-admin-header-content,
+    .materials-admin-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .materials-admin-links,
+    .materials-admin-search,
+    .material-form-buttons {
+        flex-direction: column;
+    }
+
+    .materials-price-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .registry-order-action .primary-button {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   GROUPED PUBLIC MATERIAL REGISTRY
+========================================= */
+
+.public-material-groups {
+    display: grid;
+    gap: 36px;
+}
+
+.material-category-group {
+    overflow: hidden;
+    border: 1px solid #dddddd;
+    border-radius: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.08);
+}
+
+.material-category-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 25px 28px;
+    background:
+        linear-gradient(
+            110deg,
+            #171717,
+            #282828
+        );
+    color: #ffffff;
+    border-bottom: 4px solid #f7941d;
+}
+
+.material-category-heading h3 {
+    margin: 2px 0 0;
+    color: #ffffff;
+    font-size: clamp(27px, 4vw, 37px);
+    line-height: 1.1;
+}
+
+.material-category-label {
+    margin: 0;
+    color: #f7941d;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.material-type-count {
+    flex: 0 0 auto;
+    padding: 8px 13px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.09);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.material-category-table-wrapper {
+    overflow-x: auto;
+}
+
+.grouped-materials-table {
+    min-width: 820px;
+    box-shadow: none;
+}
+
+.grouped-materials-table th {
+    background-color: #f5f5f5;
+    color: #252525;
+    border-bottom: 1px solid #dddddd;
+}
+
+.grouped-materials-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.material-brand-name {
+    color: #171717;
+    font-size: 17px;
+}
+
+.material-description-cell {
+    min-width: 260px;
+    color: #5f5f5f;
+    line-height: 1.55;
+}
+
+@media (max-width: 700px) {
+    .material-category-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 22px;
+    }
+
+    .material-type-count {
+        align-self: flex-start;
+    }
+}
