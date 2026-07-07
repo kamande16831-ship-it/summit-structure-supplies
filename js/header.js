@@ -1,5 +1,69 @@
 "use strict";
 
+/*
+=========================================
+START HOMEPAGE AT EXPANDED HEADER
+=========================================
+*/
+
+function forceHomePageTop() {
+    const currentPath =
+        window.location.pathname;
+
+    const isHomePage =
+        currentPath.endsWith("/") ||
+        currentPath.endsWith("/index.html");
+
+    const isHomeHash =
+        window.location.hash === "#home";
+
+    if (
+        !isHomePage ||
+        (
+            window.location.hash &&
+            !isHomeHash
+        )
+    ) {
+        return;
+    }
+
+    if (
+        "scrollRestoration" in
+        window.history
+    ) {
+        window.history.scrollRestoration =
+            "manual";
+    }
+
+    if (isHomeHash) {
+        window.history.replaceState(
+            null,
+            "",
+            currentPath +
+            window.location.search
+        );
+    }
+
+    window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto"
+    });
+}
+
+forceHomePageTop();
+
+document.addEventListener(
+    "DOMContentLoaded",
+    forceHomePageTop
+);
+
+window.addEventListener(
+    "pageshow",
+    forceHomePageTop
+);
+
+
 document.addEventListener(
     "DOMContentLoaded",
     initializeSmoothHeader
