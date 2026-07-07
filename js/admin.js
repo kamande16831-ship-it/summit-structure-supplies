@@ -1,39 +1,162 @@
 "use strict";
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "Summit@2026";
+const ADMIN_UID =
+    "6678535a-e4a1-4f6b-8f98-427d3cba3bd0";
 
-const ORDER_STORAGE_KEY = "summitOrders";
-const ADMIN_SESSION_KEY = "summitAdminSession";
+let summitAdminDatabase = null;
+let currentOrders = [];
+let knownOrderIds = new Set();
+let firstOrderLoad = true;
+let refreshTimer = null;
 
-document.addEventListener("DOMContentLoaded", function () {
-    const loginForm = document.getElementById("adminLoginForm");
-    const logoutButton = document.getElementById("logoutButton");
-    const refreshButton = document.getElementById("refreshOrdersButton");
-    const exportButton = document.getElementById("exportOrdersButton");
-    const searchInput = document.getElementById("orderSearch");
-    const tableBody = document.getElementById("ordersTableBody");
 
-    loginForm.addEventListener("submit", handleLogin);
-    logoutButton.addEventListener("click", handleLogout);
-    refreshButton.addEventListener("click", displayOrders);
-    exportButton.addEventListener("click", exportOrders);
-    searchInput.addEventListener("input", displayOrders);
-    tableBody.addEventListener("change", changeOrderStatus);
-    tableBody.addEventListener("click", deleteOrder);
+/*
+=================================
+INITIALIZATION
+=================================
+*/
 
-    if (sessionStorage.getItem(ADMIN_SESSION_KEY) === "true") {
-        showDashboard();
-    } else {
-        showLogin();
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+        initializeAdminDatabase();
+        connectAdminEvents();
+        await restoreAdminSession();
     }
-});
+);
 
 
-function handleLogin(event) {
+function initializeAdminDatabase() {
+    if (
+        !window.supabase ||
+        !window.SUMMIT_SUPABASE_URL ||
+        !window.SUMMIT_SUPABASE_KEY
+    ) {
+        showLoginError(
+            "The administrator system could not connect to Supabase."
+        );
+
+        return;
+    }
+
+    summitAdminDatabase =
+        window.supabase.createClient(
+            window.SUMMIT_SUPABASE_URL,
+            window.SUMMIT_SUPABASE_KEY
+        );
+}
+
+
+function connectAdminEvents() {
+    document
+        .getElementById("adminLoginForm")
+        .addEventListener(
+            "submit",
+            handleAdminLogin
+        );
+
+    document
+        .getElementById("logoutButton")
+        .addEventListener(
+            "click",
+            handleAdminLogout
+        );
+
+    document
+        .getElementById("refreshOrdersButton")
+        .addEventListener(
+            "click",
+            loadOrders
+        );
+
+    document
+        .getElementById("exportOrdersButton")
+        .addEventListener(
+            "click",
+            exportOrders
+        );
+
+    document
+        .getElementById("orderSearch")
+        .addEventListener(
+            "input",
+            displayFilteredOrders
+        );
+
+    document
+        .getElementById("ordersTableBody")
+        .addEventListener(
+            "change",
+            handleStatusChange
+        );
+
+    document
+        .getElementById("ordersTableBody")
+        .addEventListener(
+            "click",
+            handleOrderDeletion
+        );
+}
+
+
+/*
+=================================
+AUTHENTICATION
+=================================
+*/
+
+async function restoreAdminSession() {
+    if (!summitAdminDatabase) {
+        showLogin();
+        return;
+    }
+
+    const result =
+        await summitAdminDatabase.auth.getSession();
+
+    if (result.error) {
+        console.error(
+            "Session check failed:",
+            result.error
+        );
+
+        showLogin();
+        return;
+    }
+
+    const session = result.data.session;
+
+    if (
+        session &&
+        session.user &&
+        session.user.id === ADMIN_UID
+    ) {
+        await showDashboard();
+        return;
+    }
+
+    if (session) {
+        await summitAdminDatabase.auth.signOut();
+    }
+
+    showLogin();
+}
+
+
+async function handleAdminLogin(event) {
     event.preventDefault();
 
-    const username = document
+    const loginForm = event.currentTarget;
+
+    if (!summitAdminDatabase) {
+        showLoginError(
+            "The database connection is unavailable."
+        );
+
+        return;
+    }
+
+    const email = document
         .getElementById("adminUsername")
         .value
         .trim();
@@ -42,29 +165,71 @@ function handleLogin(event) {
         .getElementById("adminPassword")
         .value;
 
-    const message =
-        document.getElementById("adminLoginMessage");
+    const submitButton =
+        loginForm.querySelector(
+            'button[type="submit"]'
+        );
 
-    if (
-        username === ADMIN_USERNAME &&
-        password === ADMIN_PASSWORD
-    ) {
-        sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+    const originalText =
+        submitButton.textContent;
 
-        message.textContent = "";
-        event.currentTarget.reset();
+    submitButton.disabled = true;
+    submitButton.textContent = "Signing In...";
 
-        showDashboard();
-        return;
+    clearLoginError();
+
+    try {
+        const result =
+            await summitAdminDatabase.auth
+                .signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+        if (result.error) {
+            throw result.error;
+        }
+
+        if (
+            !result.data.user ||
+            result.data.user.id !== ADMIN_UID
+        ) {
+            await summitAdminDatabase.auth.signOut();
+
+            throw new Error(
+                "This account is not authorized to access the dashboard."
+            );
+        }
+
+        loginForm.reset();
+
+        await requestNotificationPermission();
+        await showDashboard();
+
+    } catch (error) {
+        console.error(
+            "Administrator login failed:",
+            error
+        );
+
+        showLoginError(
+            error.message ||
+            "The email address or password is incorrect."
+        );
+
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
     }
-
-    message.textContent = "Incorrect username or password.";
-    message.className = "admin-login-message error-message";
 }
 
 
-function handleLogout() {
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+async function handleAdminLogout() {
+    if (summitAdminDatabase) {
+        await summitAdminDatabase.auth.signOut();
+    }
+
+    stopAutomaticRefresh();
     showLogin();
 }
 
@@ -84,7 +249,7 @@ function showLogin() {
 }
 
 
-function showDashboard() {
+async function showDashboard() {
     document
         .getElementById("adminLoginSection")
         .classList.add("hidden");
@@ -97,84 +262,234 @@ function showDashboard() {
         .getElementById("logoutButton")
         .classList.remove("hidden");
 
-    displayOrders();
+    firstOrderLoad = true;
+    knownOrderIds = new Set();
+
+    await loadOrders();
+    startAutomaticRefresh();
 }
 
 
-function getOrders() {
-    try {
-        const orders = JSON.parse(
-            localStorage.getItem(ORDER_STORAGE_KEY)
+function showLoginError(message) {
+    const element =
+        document.getElementById(
+            "adminLoginMessage"
         );
 
-        return Array.isArray(orders) ? orders : [];
-    } catch (error) {
-        console.error("Could not read orders:", error);
-        return [];
+    if (!element) {
+        return;
     }
+
+    element.textContent = message;
+    element.className =
+        "admin-login-message error-message";
 }
 
 
-function saveOrders(orders) {
-    localStorage.setItem(
-        ORDER_STORAGE_KEY,
-        JSON.stringify(orders)
+function clearLoginError() {
+    const element =
+        document.getElementById(
+            "adminLoginMessage"
+        );
+
+    element.textContent = "";
+    element.className =
+        "admin-login-message";
+}
+
+
+/*
+=================================
+LOAD ORDERS
+=================================
+*/
+
+async function loadOrders() {
+    if (!summitAdminDatabase) {
+        return;
+    }
+
+    const result = await summitAdminDatabase
+        .from("orders")
+        .select("*")
+        .order(
+            "submitted_at",
+            { ascending: false }
+        );
+
+    if (result.error) {
+        console.error(
+            "Unable to load orders:",
+            result.error
+        );
+
+        showOrderLoadingError(
+            result.error.message
+        );
+
+        return;
+    }
+
+    const downloadedOrders =
+        Array.isArray(result.data)
+            ? result.data
+            : [];
+
+    notifyAboutNewOrders(downloadedOrders);
+
+    currentOrders = downloadedOrders;
+
+    updateOrderCounts(currentOrders);
+    displayFilteredOrders();
+}
+
+
+function startAutomaticRefresh() {
+    stopAutomaticRefresh();
+
+    refreshTimer = window.setInterval(
+        loadOrders,
+        15000
     );
 }
 
 
-function displayOrders() {
-    const tableBody =
-        document.getElementById("ordersTableBody");
+function stopAutomaticRefresh() {
+    if (refreshTimer) {
+        window.clearInterval(refreshTimer);
+        refreshTimer = null;
+    }
+}
 
-    const searchValue =
-        document
-            .getElementById("orderSearch")
-            .value
-            .trim()
-            .toLowerCase();
 
-    const emptyMessage =
-        document.getElementById("adminEmptyMessage");
+/*
+=================================
+NEW ORDER NOTIFICATIONS
+=================================
+*/
 
-    const tableContainer =
-        document.getElementById("adminTableContainer");
+function notifyAboutNewOrders(orders) {
+    const latestOrderIds =
+        new Set(
+            orders.map(function (order) {
+                return order.id;
+            })
+        );
 
-    const allOrders = getOrders()
-        .map(function (order) {
-            return {
-                ...order,
-                status: order.status || "New"
-            };
-        })
-        .sort(function (firstOrder, secondOrder) {
-            return (
-                new Date(secondOrder.submittedAt) -
-                new Date(firstOrder.submittedAt)
+    if (firstOrderLoad) {
+        knownOrderIds = latestOrderIds;
+        firstOrderLoad = false;
+        return;
+    }
+
+    const newOrders =
+        orders.filter(function (order) {
+            return !knownOrderIds.has(order.id);
+        });
+
+    knownOrderIds = latestOrderIds;
+
+    if (newOrders.length === 0) {
+        return;
+    }
+
+    document.title =
+        `(${newOrders.length}) New Order - Summit Admin`;
+
+    if (
+        "Notification" in window &&
+        Notification.permission === "granted"
+    ) {
+        const newestOrder = newOrders[0];
+
+        new Notification(
+            "New Summit Structure Supplies Order",
+            {
+                body:
+                    `${newestOrder.customer_name} ordered ` +
+                    `${newestOrder.quantity} ` +
+                    `${newestOrder.measurement_unit} of ` +
+                    `${newestOrder.material_type}.`
+            }
+        );
+    }
+}
+
+
+async function requestNotificationPermission() {
+    if (
+        "Notification" in window &&
+        Notification.permission === "default"
+    ) {
+        try {
+            await Notification.requestPermission();
+        } catch (error) {
+            console.warn(
+                "Notification permission was not granted:",
+                error
+            );
+        }
+    }
+}
+
+
+/*
+=================================
+DISPLAY ORDERS
+=================================
+*/
+
+function displayFilteredOrders() {
+    const searchValue = document
+        .getElementById("orderSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+    const filteredOrders =
+        currentOrders.filter(function (order) {
+            const searchableText = [
+                order.reference,
+                order.customer_name,
+                order.phone_number,
+                order.email_address,
+                order.material_type,
+                order.delivery_location,
+                order.project_type,
+                order.status
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+            return searchableText.includes(
+                searchValue
             );
         });
 
-    updateOrderCounts(allOrders);
+    renderOrders(filteredOrders);
+}
 
-    const filteredOrders = allOrders.filter(function (order) {
-        const searchableText = [
-            order.reference,
-            order.customerName,
-            order.phoneNumber,
-            order.emailAddress,
-            order.materialType,
-            order.deliveryLocation
-        ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
 
-        return searchableText.includes(searchValue);
-    });
+function renderOrders(orders) {
+    const tableBody =
+        document.getElementById(
+            "ordersTableBody"
+        );
+
+    const emptyMessage =
+        document.getElementById(
+            "adminEmptyMessage"
+        );
+
+    const tableContainer =
+        document.getElementById(
+            "adminTableContainer"
+        );
 
     tableBody.innerHTML = "";
 
-    if (filteredOrders.length === 0) {
+    if (orders.length === 0) {
         emptyMessage.classList.remove("hidden");
         tableContainer.classList.add("hidden");
         return;
@@ -183,65 +498,87 @@ function displayOrders() {
     emptyMessage.classList.add("hidden");
     tableContainer.classList.remove("hidden");
 
-    filteredOrders.forEach(function (order) {
-        const row = document.createElement("tr");
+    orders.forEach(function (order) {
+        const row =
+            document.createElement("tr");
 
         row.innerHTML = `
             <td>
                 <strong>
-                    ${escapeHtml(order.reference || "No reference")}
+                    ${escapeHtml(order.reference)}
                 </strong>
             </td>
 
             <td>
                 <strong>
-                    ${escapeHtml(order.customerName || "Unknown")}
+                    ${escapeHtml(order.customer_name)}
                 </strong>
 
                 <span>
-                    ${escapeHtml(order.phoneNumber || "No phone")}
+                    ${escapeHtml(order.phone_number)}
                 </span>
 
                 <span>
-                    ${escapeHtml(order.emailAddress || "No email")}
+                    ${escapeHtml(
+                        order.email_address ||
+                        "No email supplied"
+                    )}
                 </span>
             </td>
 
             <td>
                 <strong>
-                    ${escapeHtml(order.materialType || "Not specified")}
+                    ${escapeHtml(order.material_type)}
                 </strong>
 
                 <span>
-                    ${escapeHtml(order.quantity || "-")}
-                    ${escapeHtml(order.measurementUnit || "")}
+                    ${escapeHtml(order.quantity)}
+                    ${escapeHtml(order.measurement_unit)}
                 </span>
 
                 <span>
-                    ${escapeHtml(order.projectType || "")}
+                    ${escapeHtml(order.project_type)}
                 </span>
+
+                ${
+                    order.order_notes
+                        ? `
+                            <span>
+                                ${escapeHtml(order.order_notes)}
+                            </span>
+                        `
+                        : ""
+                }
             </td>
 
             <td>
                 <strong>
-                    ${escapeHtml(order.deliveryLocation || "Not provided")}
+                    ${escapeHtml(
+                        order.delivery_location
+                    )}
                 </strong>
 
                 <span>
-                    ${formatDate(order.deliveryDate)}
+                    ${formatDate(
+                        order.delivery_date
+                    )}
                 </span>
             </td>
 
             <td>
-                ${formatDateTime(order.submittedAt)}
+                ${formatDateTime(
+                    order.submitted_at
+                )}
             </td>
 
             <td>
                 <select
                     class="admin-status-select"
-                    data-reference="${escapeHtml(order.reference || "")}"
+                    data-order-id="${escapeHtml(order.id)}"
                 >
-                    ${createStatusOptions(order.status)}
+                    ${createStatusOptions(
+                        order.status
+                    )}
                 </select>
             </td>
 
@@ -249,7 +586,8 @@ function displayOrders() {
                 <button
                     type="button"
                     class="admin-delete-button"
-                    data-reference="${escapeHtml(order.reference || "")}"
+                    data-order-id="${escapeHtml(order.id)}"
+                    data-reference="${escapeHtml(order.reference)}"
                 >
                     Delete
                 </button>
@@ -273,10 +611,15 @@ function createStatusOptions(currentStatus) {
     return statuses
         .map(function (status) {
             const selected =
-                status === currentStatus ? "selected" : "";
+                status === currentStatus
+                    ? "selected"
+                    : "";
 
             return `
-                <option value="${status}" ${selected}>
+                <option
+                    value="${status}"
+                    ${selected}
+                >
                     ${status}
                 </option>
             `;
@@ -285,153 +628,282 @@ function createStatusOptions(currentStatus) {
 }
 
 
-function changeOrderStatus(event) {
+/*
+=================================
+UPDATE ORDER STATUS
+=================================
+*/
+
+async function handleStatusChange(event) {
     const select =
-        event.target.closest(".admin-status-select");
+        event.target.closest(
+            ".admin-status-select"
+        );
 
     if (!select) {
         return;
     }
 
-    const reference = select.dataset.reference;
-    const orders = getOrders();
+    const orderId =
+        select.dataset.orderId;
 
-    const order = orders.find(function (savedOrder) {
-        return savedOrder.reference === reference;
-    });
+    const newStatus =
+        select.value;
 
-    if (!order) {
+    select.disabled = true;
+
+    const result = await summitAdminDatabase
+        .from("orders")
+        .update({
+            status: newStatus
+        })
+        .eq("id", orderId);
+
+    select.disabled = false;
+
+    if (result.error) {
+        window.alert(
+            `The status could not be updated: ${result.error.message}`
+        );
+
+        await loadOrders();
         return;
     }
 
-    order.status = select.value;
-    saveOrders(orders);
-    displayOrders();
+    await loadOrders();
 }
 
 
-function deleteOrder(event) {
+/*
+=================================
+DELETE ORDER
+=================================
+*/
+
+async function handleOrderDeletion(event) {
     const button =
-        event.target.closest(".admin-delete-button");
+        event.target.closest(
+            ".admin-delete-button"
+        );
 
     if (!button) {
         return;
     }
 
-    const reference = button.dataset.reference;
+    const orderId =
+        button.dataset.orderId;
 
-    const confirmed = window.confirm(
-        `Delete order ${reference}?`
-    );
+    const reference =
+        button.dataset.reference;
+
+    const confirmed =
+        window.confirm(
+            `Delete order ${reference}?`
+        );
 
     if (!confirmed) {
         return;
     }
 
-    const remainingOrders = getOrders().filter(
-        function (order) {
-            return order.reference !== reference;
-        }
-    );
+    button.disabled = true;
+    button.textContent = "Deleting...";
 
-    saveOrders(remainingOrders);
-    displayOrders();
-}
+    const result = await summitAdminDatabase
+        .from("orders")
+        .delete()
+        .eq("id", orderId);
 
+    if (result.error) {
+        window.alert(
+            `The order could not be deleted: ${result.error.message}`
+        );
 
-function updateOrderCounts(orders) {
-    document.getElementById("totalOrdersCount").textContent =
-        orders.length;
-
-    document.getElementById("newOrdersCount").textContent =
-        countStatus(orders, "New");
-
-    document.getElementById("processingOrdersCount").textContent =
-        countStatus(orders, "Processing");
-
-    document.getElementById("completedOrdersCount").textContent =
-        countStatus(orders, "Completed");
-}
-
-
-function countStatus(orders, status) {
-    return orders.filter(function (order) {
-        return (order.status || "New") === status;
-    }).length;
-}
-
-
-function exportOrders() {
-    const orders = getOrders();
-
-    if (orders.length === 0) {
-        window.alert("There are no orders to export.");
+        button.disabled = false;
+        button.textContent = "Delete";
         return;
     }
 
-    const rows = [
-        [
-            "Reference",
-            "Customer",
-            "Phone",
-            "Email",
-            "Material",
-            "Quantity",
-            "Unit",
-            "Location",
-            "Delivery Date",
-            "Project Type",
-            "Status",
-            "Submitted At"
-        ]
+    await loadOrders();
+}
+
+
+/*
+=================================
+ORDER COUNTS
+=================================
+*/
+
+function updateOrderCounts(orders) {
+    document
+        .getElementById("totalOrdersCount")
+        .textContent = orders.length;
+
+    document
+        .getElementById("newOrdersCount")
+        .textContent =
+            countOrdersByStatus(
+                orders,
+                "New"
+            );
+
+    document
+        .getElementById(
+            "processingOrdersCount"
+        )
+        .textContent =
+            countOrdersByStatus(
+                orders,
+                "Processing"
+            );
+
+    document
+        .getElementById(
+            "completedOrdersCount"
+        )
+        .textContent =
+            countOrdersByStatus(
+                orders,
+                "Completed"
+            );
+}
+
+
+function countOrdersByStatus(
+    orders,
+    status
+) {
+    return orders.filter(
+        function (order) {
+            return order.status === status;
+        }
+    ).length;
+}
+
+
+/*
+=================================
+EXPORT ORDERS
+=================================
+*/
+
+function exportOrders() {
+    if (currentOrders.length === 0) {
+        window.alert(
+            "There are no orders to export."
+        );
+
+        return;
+    }
+
+    const headings = [
+        "Reference",
+        "Customer Name",
+        "Phone Number",
+        "Email",
+        "Material",
+        "Quantity",
+        "Unit",
+        "Delivery Location",
+        "Delivery Date",
+        "Project Type",
+        "Notes",
+        "Status",
+        "Submitted At"
     ];
 
-    orders.forEach(function (order) {
-        rows.push([
-            order.reference,
-            order.customerName,
-            order.phoneNumber,
-            order.emailAddress,
-            order.materialType,
-            order.quantity,
-            order.measurementUnit,
-            order.deliveryLocation,
-            order.deliveryDate,
-            order.projectType,
-            order.status || "New",
-            order.submittedAt
-        ]);
-    });
+    const rows =
+        currentOrders.map(function (order) {
+            return [
+                order.reference,
+                order.customer_name,
+                order.phone_number,
+                order.email_address,
+                order.material_type,
+                order.quantity,
+                order.measurement_unit,
+                order.delivery_location,
+                order.delivery_date,
+                order.project_type,
+                order.order_notes,
+                order.status,
+                order.submitted_at
+            ];
+        });
 
-    const csv = rows
+    const csv = [
+        headings,
+        ...rows
+    ]
         .map(function (row) {
             return row
-                .map(function (value) {
-                    const safeValue =
-                        value == null ? "" : String(value);
-
-                    return `"${safeValue.replaceAll('"', '""')}"`;
-                })
+                .map(csvValue)
                 .join(",");
         })
         .join("\n");
 
     const blob = new Blob(
         [csv],
-        { type: "text/csv;charset=utf-8;" }
+        {
+            type:
+                "text/csv;charset=utf-8;"
+        }
     );
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const downloadUrl =
+        URL.createObjectURL(blob);
 
-    link.href = url;
-    link.download = "summit-structure-orders.csv";
+    const link =
+        document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download =
+        "summit-structure-orders.csv";
 
     document.body.appendChild(link);
     link.click();
     link.remove();
 
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(downloadUrl);
+}
+
+
+/*
+=================================
+HELPERS
+=================================
+*/
+
+function showOrderLoadingError(message) {
+    const emptyMessage =
+        document.getElementById(
+            "adminEmptyMessage"
+        );
+
+    const tableContainer =
+        document.getElementById(
+            "adminTableContainer"
+        );
+
+    emptyMessage.innerHTML = `
+        <h3>Orders could not be loaded</h3>
+        <p>${escapeHtml(message)}</p>
+    `;
+
+    emptyMessage.classList.remove("hidden");
+    tableContainer.classList.add("hidden");
+}
+
+
+function csvValue(value) {
+    const safeValue =
+        value == null
+            ? ""
+            : String(value);
+
+    return `"${safeValue.replaceAll(
+        '"',
+        '""'
+    )}"`;
 }
 
 
@@ -440,7 +912,8 @@ function formatDate(value) {
         return "Not provided";
     }
 
-    const date = new Date(`${value}T00:00:00`);
+    const date =
+        new Date(`${value}T00:00:00`);
 
     return Number.isNaN(date.getTime())
         ? value
@@ -453,7 +926,8 @@ function formatDateTime(value) {
         return "Unknown";
     }
 
-    const date = new Date(value);
+    const date =
+        new Date(value);
 
     return Number.isNaN(date.getTime())
         ? value
@@ -462,7 +936,7 @@ function formatDateTime(value) {
 
 
 function escapeHtml(value) {
-    return String(value)
+    return String(value ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
