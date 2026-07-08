@@ -17,6 +17,7 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/payment.css">
 </head>
 
 <body>
@@ -490,6 +491,45 @@
 
         </section>
 
+    
+        <!-- Public payment method -->
+        <section
+            class="public-payment-section hidden"
+            id="publicPaymentSection"
+        >
+
+            <div class="container">
+
+                <div class="public-payment-heading">
+
+                    <p class="section-label">
+                        Payment method
+                    </p>
+
+                    <h2>
+                        Complete Your Payment
+                    </h2>
+
+                    <p>
+                        Use the payment information below after your
+                        order has been reviewed and confirmed.
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="public-payment-card"
+                    id="publicPaymentCard"
+                >
+                    Loading payment information...
+                </div>
+
+            </div>
+
+        </section>
+
+
     </main>
 
 
@@ -526,6 +566,7 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/main.js"></script>
     <script src="js/header.js"></script>
+    <script src="js/payment.js"></script>
 
 </body>
 </html>

@@ -12,6 +12,7 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/admin-dashboard.css">
+    <link rel="stylesheet" href="css/payment.css">
 </head>
 
 <body class="unified-admin-body">
@@ -64,6 +65,15 @@
                 >
                     Materials
                 </button>
+
+                <button
+                    type="button"
+                    class="admin-menu-button"
+                    data-admin-view="payment"
+                >
+                    Payment
+                </button>
+
 
                 <a
                     href="materials.html"
@@ -692,6 +702,256 @@
                 </div>
 
             </section>
+
+
+            <!-- Payment settings -->
+            <section
+                class="admin-view-panel hidden"
+                data-admin-panel="payment"
+            >
+
+                <div class="admin-panel-heading">
+
+                    <div>
+                        <p class="section-label">
+                            Public payment instructions
+                        </p>
+
+                        <h1>Payment Method</h1>
+
+                        <p>
+                            Change the payment information displayed
+                            to customers on the public order page.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="admin-secondary-action"
+                        id="refreshUnifiedPayment"
+                    >
+                        Refresh Payment Details
+                    </button>
+
+                </div>
+
+
+                <div class="unified-payment-layout">
+
+                    <form
+                        class="unified-payment-form"
+                        id="unifiedPaymentForm"
+                    >
+
+                        <p class="section-label">
+                            Payment configuration
+                        </p>
+
+                        <h2>M-PESA Payment Details</h2>
+
+
+                        <div class="form-group">
+
+                            <label for="unifiedPaymentName">
+                                Payment Method Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="unifiedPaymentName"
+                                placeholder="Example: M-PESA"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="unifiedPaymentType">
+                                Payment Option
+                            </label>
+
+                            <select
+                                id="unifiedPaymentType"
+                                required
+                            >
+                                <option value="Paybill">
+                                    Paybill
+                                </option>
+
+                                <option value="Till Number">
+                                    Till Number
+                                </option>
+
+                                <option value="Send Money">
+                                    Send Money
+                                </option>
+
+                                <option value="Bank Transfer">
+                                    Bank Transfer
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="unified-payment-fields">
+
+                            <div class="form-group" id="unifiedPrimaryLabelGroup">
+
+                                <label for="unifiedPrimaryLabel">
+                                    Primary Field Label
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="unifiedPrimaryLabel"
+                                    placeholder="Business Number"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group" id="unifiedPrimaryValueGroup">
+
+                                <label for="unifiedPrimaryValue" id="unifiedPrimaryValueDisplayLabel">
+                                    Primary Field Value
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="unifiedPrimaryValue"
+                                    placeholder="Enter Paybill or Till Number"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="unified-payment-fields">
+
+                            <div class="form-group" id="unifiedSecondaryLabelGroup">
+
+                                <label for="unifiedSecondaryLabel">
+                                    Secondary Field Label
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="unifiedSecondaryLabel"
+                                    placeholder="Account Number"
+                                >
+
+                            </div>
+
+                            <div class="form-group" id="unifiedSecondaryValueGroup">
+
+                                <label for="unifiedSecondaryValue" id="unifiedSecondaryValueDisplayLabel">
+                                    Secondary Field Value
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="unifiedSecondaryValue"
+                                    placeholder="Use your order reference"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group" id="unifiedRecipientGroup">
+
+                                <label for="unifiedRecipientName" id="unifiedRecipientDisplayLabel">
+                                Recipient or Business Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="unifiedRecipientName"
+                                placeholder="Summit Structure Supplies"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="unifiedPaymentInstructions">
+                                Customer Instructions
+                            </label>
+
+                            <textarea
+                                id="unifiedPaymentInstructions"
+                                rows="5"
+                                placeholder="Explain how customers should make payment"
+                            ></textarea>
+
+                        </div>
+
+
+                        <label class="unified-active-checkbox">
+
+                            <input
+                                type="checkbox"
+                                id="unifiedPaymentActive"
+                            >
+
+                            <span>
+                                Display this payment method on the public order page
+                            </span>
+
+                        </label>
+
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            id="saveUnifiedPayment"
+                        >
+                            Save Payment Method
+                        </button>
+
+                        <p
+                            class="unified-admin-message"
+                            id="unifiedPaymentMessage"
+                            aria-live="polite"
+                        ></p>
+
+                    </form>
+
+
+                    <aside class="unified-payment-preview">
+
+                        <p class="section-label">
+                            Public preview
+                        </p>
+
+                        <h2>
+                            What Customers Will See
+                        </h2>
+
+                        <div
+                            class="admin-payment-preview-card"
+                            id="adminPaymentPreview"
+                        >
+                            Enter the payment details to preview them.
+                        </div>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
 
         </div>
 

@@ -7,6 +7,7 @@ let unifiedDatabase = null;
 let unifiedOrders = [];
 let unifiedMaterials = [];
 let editingUnifiedMaterialId = null;
+let unifiedPaymentSettings = null;
 
 
 document.addEventListener(
@@ -148,6 +149,36 @@ function connectUnifiedAdminEvents() {
         "hashchange",
         activateViewFromHash
     );
+
+    document
+        .getElementById("unifiedPaymentForm")
+        .addEventListener(
+            "submit",
+            saveUnifiedPaymentSettings
+        );
+
+    document
+        .getElementById("refreshUnifiedPayment")
+        .addEventListener(
+            "click",
+            loadUnifiedPaymentSettings
+        );
+
+
+    document
+        .getElementById("unifiedPaymentType")
+        .addEventListener(
+            "change",
+            handlePaymentOptionChange
+        );
+
+    document
+        .getElementById("unifiedPaymentForm")
+        .addEventListener(
+            "input",
+            renderUnifiedPaymentPreview
+        );
+
 }
 
 
@@ -287,7 +318,8 @@ function activateViewFromHash() {
     const validViews = [
         "dashboard",
         "orders",
-        "materials"
+        "materials",
+        "payment"
     ];
 
     activateAdminView(
@@ -333,7 +365,8 @@ function activateAdminView(view) {
 async function loadUnifiedData() {
     await Promise.all([
         loadUnifiedOrders(),
-        loadUnifiedMaterials()
+        loadUnifiedMaterials(),
+        loadUnifiedPaymentSettings()
     ]);
 
     renderUnifiedDashboard();
@@ -990,6 +1023,551 @@ async function deleteUnifiedMaterial(
     }
 
     await loadUnifiedMaterials();
+}
+
+
+
+/* =====================================
+   PAYMENT METHOD
+===================================== */
+
+
+function handlePaymentOptionChange() {
+    applyPaymentOptionLayout(true);
+    renderUnifiedPaymentPreview();
+}
+
+
+function applyPaymentOptionLayout(clearUnusedValues) {
+    const paymentType =
+        document.getElementById(
+            "unifiedPaymentType"
+        ).value;
+
+    const paymentNameInput =
+        document.getElementById(
+            "unifiedPaymentName"
+        );
+
+    const primaryLabelInput =
+        document.getElementById(
+            "unifiedPrimaryLabel"
+        );
+
+    const primaryValueInput =
+        document.getElementById(
+            "unifiedPrimaryValue"
+        );
+
+    const secondaryLabelInput =
+        document.getElementById(
+            "unifiedSecondaryLabel"
+        );
+
+    const secondaryValueInput =
+        document.getElementById(
+            "unifiedSecondaryValue"
+        );
+
+    const recipientInput =
+        document.getElementById(
+            "unifiedRecipientName"
+        );
+
+    const primaryLabelGroup =
+        document.getElementById(
+            "unifiedPrimaryLabelGroup"
+        );
+
+    const secondaryLabelGroup =
+        document.getElementById(
+            "unifiedSecondaryLabelGroup"
+        );
+
+    const secondaryValueGroup =
+        document.getElementById(
+            "unifiedSecondaryValueGroup"
+        );
+
+    const recipientGroup =
+        document.getElementById(
+            "unifiedRecipientGroup"
+        );
+
+    const primaryDisplayLabel =
+        document.getElementById(
+            "unifiedPrimaryValueDisplayLabel"
+        );
+
+    const secondaryDisplayLabel =
+        document.getElementById(
+            "unifiedSecondaryValueDisplayLabel"
+        );
+
+    const recipientDisplayLabel =
+        document.getElementById(
+            "unifiedRecipientDisplayLabel"
+        );
+
+
+    const configurations = {
+        "Paybill": {
+            paymentName: "M-PESA",
+            primaryLabel: "Business Number",
+            primaryPlaceholder: "Enter M-PESA Paybill number",
+            secondaryLabel: "Account Number",
+            secondaryPlaceholder: "Example: Use the order reference",
+            recipientLabel: "Recipient or Business Name",
+            showSecondary: true,
+            showRecipient: true,
+            customLabels: false
+        },
+
+        "Till Number": {
+            paymentName: "M-PESA",
+            primaryLabel: "Till Number",
+            primaryPlaceholder: "Enter M-PESA Till Number",
+            secondaryLabel: "",
+            secondaryPlaceholder: "",
+            recipientLabel: "Recipient or Business Name",
+            showSecondary: false,
+            showRecipient: true,
+            customLabels: false
+        },
+
+        "Send Money": {
+            paymentName: "M-PESA",
+            primaryLabel: "M-PESA Phone Number",
+            primaryPlaceholder: "Example: 0712 345 678",
+            secondaryLabel: "",
+            secondaryPlaceholder: "",
+            recipientLabel: "Recipient Name",
+            showSecondary: false,
+            showRecipient: true,
+            customLabels: false
+        },
+
+        "Bank Transfer": {
+            paymentName: "Bank Transfer",
+            primaryLabel: "Bank Name",
+            primaryPlaceholder: "Enter the bank name",
+            secondaryLabel: "Account Number",
+            secondaryPlaceholder: "Enter the bank account number",
+            recipientLabel: "Account Name",
+            showSecondary: true,
+            showRecipient: true,
+            customLabels: false
+        },
+
+        "Other": {
+            paymentName: "",
+            primaryLabel: "Primary Field",
+            primaryPlaceholder: "Enter the primary payment detail",
+            secondaryLabel: "Secondary Field",
+            secondaryPlaceholder: "Enter an optional secondary detail",
+            recipientLabel: "Recipient or Business Name",
+            showSecondary: true,
+            showRecipient: true,
+            customLabels: true
+        }
+    };
+
+
+    const configuration =
+        configurations[paymentType] ||
+        configurations.Other;
+
+
+    if (
+        paymentType !== "Other" &&
+        (
+            !paymentNameInput.value.trim() ||
+            paymentNameInput.value === "M-PESA" ||
+            paymentNameInput.value === "Bank Transfer"
+        )
+    ) {
+        paymentNameInput.value =
+            configuration.paymentName;
+    }
+
+
+    /*
+    Standard payment options use fixed labels.
+    Custom label editing is only shown for "Other".
+    */
+
+    primaryLabelGroup.classList.toggle(
+        "hidden",
+        !configuration.customLabels
+    );
+
+    secondaryLabelGroup.classList.toggle(
+        "hidden",
+        !configuration.customLabels
+    );
+
+
+    if (!configuration.customLabels) {
+        primaryLabelInput.value =
+            configuration.primaryLabel;
+
+        secondaryLabelInput.value =
+            configuration.secondaryLabel;
+    }
+
+
+    primaryDisplayLabel.textContent =
+        configuration.primaryLabel;
+
+    primaryValueInput.placeholder =
+        configuration.primaryPlaceholder;
+
+    primaryValueInput.required = true;
+
+
+    secondaryValueGroup.classList.toggle(
+        "hidden",
+        !configuration.showSecondary
+    );
+
+    secondaryValueInput.required =
+        configuration.showSecondary;
+
+    secondaryDisplayLabel.textContent =
+        configuration.secondaryLabel ||
+        "Secondary Payment Detail";
+
+    secondaryValueInput.placeholder =
+        configuration.secondaryPlaceholder;
+
+
+    recipientGroup.classList.toggle(
+        "hidden",
+        !configuration.showRecipient
+    );
+
+    recipientInput.required =
+        configuration.showRecipient;
+
+    recipientDisplayLabel.textContent =
+        configuration.recipientLabel;
+
+
+    if (clearUnusedValues) {
+        if (!configuration.showSecondary) {
+            secondaryLabelInput.value = "";
+            secondaryValueInput.value = "";
+        }
+
+        if (!configuration.showRecipient) {
+            recipientInput.value = "";
+        }
+    }
+}
+
+
+async function loadUnifiedPaymentSettings() {
+    const result =
+        await unifiedDatabase
+            .from("payment_settings")
+            .select("*")
+            .eq("id", 1)
+            .limit(1);
+
+    if (result.error) {
+        showUnifiedPaymentMessage(
+            `Payment information could not be loaded: ${result.error.message}`,
+            true
+        );
+
+        return;
+    }
+
+    unifiedPaymentSettings =
+        Array.isArray(result.data) &&
+        result.data.length > 0
+            ? result.data[0]
+            : null;
+
+    populateUnifiedPaymentForm();
+}
+
+
+function populateUnifiedPaymentForm() {
+    if (!unifiedPaymentSettings) {
+        return;
+    }
+
+    document.getElementById(
+        "unifiedPaymentName"
+    ).value =
+        unifiedPaymentSettings.payment_name || "M-PESA";
+
+    document.getElementById(
+        "unifiedPaymentType"
+    ).value =
+        unifiedPaymentSettings.payment_type || "Paybill";
+
+    document.getElementById(
+        "unifiedPrimaryLabel"
+    ).value =
+        unifiedPaymentSettings.primary_label || "";
+
+    document.getElementById(
+        "unifiedPrimaryValue"
+    ).value =
+        unifiedPaymentSettings.primary_value || "";
+
+    document.getElementById(
+        "unifiedSecondaryLabel"
+    ).value =
+        unifiedPaymentSettings.secondary_label || "";
+
+    document.getElementById(
+        "unifiedSecondaryValue"
+    ).value =
+        unifiedPaymentSettings.secondary_value || "";
+
+    document.getElementById(
+        "unifiedRecipientName"
+    ).value =
+        unifiedPaymentSettings.recipient_name || "";
+
+    document.getElementById(
+        "unifiedPaymentInstructions"
+    ).value =
+        unifiedPaymentSettings.instructions || "";
+
+    document.getElementById(
+        "unifiedPaymentActive"
+    ).checked =
+        Boolean(unifiedPaymentSettings.is_active);
+
+    applyPaymentOptionLayout(false);
+    renderUnifiedPaymentPreview();
+}
+
+
+async function saveUnifiedPaymentSettings(event) {
+    event.preventDefault();
+
+    applyPaymentOptionLayout(false);
+
+    const button =
+        document.getElementById(
+            "saveUnifiedPayment"
+        );
+
+    const originalText =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent =
+        "Saving Payment Method...";
+
+    const paymentData = {
+        id: 1,
+
+        payment_name: document
+            .getElementById("unifiedPaymentName")
+            .value
+            .trim(),
+
+        payment_type: document
+            .getElementById("unifiedPaymentType")
+            .value,
+
+        primary_label: document
+            .getElementById("unifiedPrimaryLabel")
+            .value
+            .trim(),
+
+        primary_value: document
+            .getElementById("unifiedPrimaryValue")
+            .value
+            .trim(),
+
+        secondary_label: document
+            .getElementById("unifiedSecondaryLabel")
+            .value
+            .trim() || null,
+
+        secondary_value: document
+            .getElementById("unifiedSecondaryValue")
+            .value
+            .trim() || null,
+
+        recipient_name: document
+            .getElementById("unifiedRecipientName")
+            .value
+            .trim() || null,
+
+        instructions: document
+            .getElementById("unifiedPaymentInstructions")
+            .value
+            .trim() || null,
+
+        is_active: document
+            .getElementById("unifiedPaymentActive")
+            .checked
+    };
+
+    const result =
+        await unifiedDatabase
+            .from("payment_settings")
+            .upsert(
+                paymentData,
+                {
+                    onConflict: "id"
+                }
+            );
+
+    button.disabled = false;
+    button.textContent = originalText;
+
+    if (result.error) {
+        showUnifiedPaymentMessage(
+            `Payment details could not be saved: ${result.error.message}`,
+            true
+        );
+
+        return;
+    }
+
+    showUnifiedPaymentMessage(
+        "Payment method saved successfully.",
+        false
+    );
+
+    await loadUnifiedPaymentSettings();
+}
+
+
+function renderUnifiedPaymentPreview() {
+    const preview =
+        document.getElementById(
+            "adminPaymentPreview"
+        );
+
+    if (!preview) {
+        return;
+    }
+
+    const paymentName =
+        document.getElementById(
+            "unifiedPaymentName"
+        ).value.trim() || "M-PESA";
+
+    const paymentType =
+        document.getElementById(
+            "unifiedPaymentType"
+        ).value;
+
+    const primaryLabel =
+        document.getElementById(
+            "unifiedPrimaryLabel"
+        ).value.trim();
+
+    const primaryValue =
+        document.getElementById(
+            "unifiedPrimaryValue"
+        ).value.trim();
+
+    const secondaryLabel =
+        document.getElementById(
+            "unifiedSecondaryLabel"
+        ).value.trim();
+
+    const secondaryValue =
+        document.getElementById(
+            "unifiedSecondaryValue"
+        ).value.trim();
+
+    const recipientName =
+        document.getElementById(
+            "unifiedRecipientName"
+        ).value.trim();
+
+    const instructions =
+        document.getElementById(
+            "unifiedPaymentInstructions"
+        ).value.trim();
+
+    const active =
+        document.getElementById(
+            "unifiedPaymentActive"
+        ).checked;
+
+    preview.innerHTML = `
+        <span class="payment-status-preview">
+            ${active ? "Visible to customers" : "Hidden from customers"}
+        </span>
+
+        <h3>
+            ${escapeAdminHtml(paymentName)}
+        </h3>
+
+        <p class="payment-option-preview">
+            ${escapeAdminHtml(paymentType)}
+        </p>
+
+        <dl>
+            <div>
+                <dt>${escapeAdminHtml(primaryLabel)}</dt>
+                <dd>${escapeAdminHtml(primaryValue || "Not entered")}</dd>
+            </div>
+
+            ${
+                secondaryLabel || secondaryValue
+                    ? `
+                        <div>
+                            <dt>${escapeAdminHtml(secondaryLabel)}</dt>
+                            <dd>${escapeAdminHtml(secondaryValue)}</dd>
+                        </div>
+                    `
+                    : ""
+            }
+
+            ${
+                recipientName
+                    ? `
+                        <div>
+                            <dt>Recipient</dt>
+                            <dd>${escapeAdminHtml(recipientName)}</dd>
+                        </div>
+                    `
+                    : ""
+            }
+        </dl>
+
+        ${
+            instructions
+                ? `
+                    <p class="payment-instructions-preview">
+                        ${escapeAdminHtml(instructions)}
+                    </p>
+                `
+                : ""
+        }
+    `;
+}
+
+
+function showUnifiedPaymentMessage(
+    message,
+    isError
+) {
+    const element =
+        document.getElementById(
+            "unifiedPaymentMessage"
+        );
+
+    element.textContent = message;
+
+    element.className =
+        isError
+            ? "unified-admin-message error-message"
+            : "unified-admin-message success-message";
 }
 
 
