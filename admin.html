@@ -177,6 +177,104 @@
         </section>
 
 
+        <!-- Administrator MFA verification -->
+        <section
+            class="unified-admin-login hidden"
+            id="unifiedAdminMfaSection"
+        >
+
+            <form
+                class="unified-admin-login-form unified-mfa-form"
+                id="unifiedMfaForm"
+            >
+
+                <p class="section-label">
+                    Multi-factor authentication
+                </p>
+
+                <h1 id="unifiedMfaTitle">
+                    Verify Your Login
+                </h1>
+
+                <p id="unifiedMfaDescription">
+                    Enter the 6-digit code from your authenticator app.
+                </p>
+
+
+                <div
+                    class="unified-mfa-setup hidden"
+                    id="unifiedMfaSetupBox"
+                >
+
+                    <p>
+                        Scan this QR code using Google Authenticator,
+                        Microsoft Authenticator, Authy, or another
+                        authenticator app.
+                    </p>
+
+                    <img
+                        id="unifiedMfaQrCode"
+                        alt="Authenticator app QR code"
+                    >
+
+                    <p class="unified-mfa-secret-line">
+                        Manual setup key:
+                        <code id="unifiedMfaSecret"></code>
+                    </p>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="unifiedMfaCode">
+                        Authenticator Code
+                    </label>
+
+                    <input
+                        type="text"
+                        id="unifiedMfaCode"
+                        inputmode="numeric"
+                        autocomplete="one-time-code"
+                        maxlength="6"
+                        pattern="[0-9]{6}"
+                        placeholder="Enter 6-digit code"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-button unified-login-button"
+                    id="unifiedMfaSubmit"
+                >
+                    Verify Code
+                </button>
+
+
+                <button
+                    type="button"
+                    class="admin-secondary-action unified-mfa-logout"
+                    id="unifiedMfaCancel"
+                >
+                    Log Out
+                </button>
+
+
+                <p
+                    id="unifiedMfaMessage"
+                    class="unified-admin-message"
+                    aria-live="polite"
+                ></p>
+
+            </form>
+
+        </section>
+
+
+
         <!-- Unified administrator application -->
         <div
             class="container unified-admin-application hidden"

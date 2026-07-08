@@ -8,6 +8,8 @@ let unifiedOrders = [];
 let unifiedMaterials = [];
 let editingUnifiedMaterialId = null;
 let unifiedPaymentSettings = null;
+let pendingUnifiedMfaFactorId = null;
+let pendingUnifiedMfaMode = null;
 
 
 document.addEventListener(
@@ -50,6 +52,21 @@ function connectUnifiedAdminEvents() {
 
     document
         .getElementById("unifiedAdminLogout")
+        .addEventListener(
+            "click",
+            handleUnifiedLogout
+        );
+
+
+    document
+        .getElementById("unifiedMfaForm")
+        .addEventListener(
+            "submit",
+            handleUnifiedMfaSubmit
+        );
+
+    document
+        .getElementById("unifiedMfaCancel")
         .addEventListener(
             "click",
             handleUnifiedLogout
@@ -193,7 +210,7 @@ async function restoreUnifiedAdminSession() {
         session?.user?.id ===
         UNIFIED_ADMIN_UID
     ) {
-        await showUnifiedApplication();
+        await continueUnifiedAdminSecurityCheck();
         return;
     }
 
@@ -257,7 +274,7 @@ async function handleUnifiedLogin(event) {
         }
 
         loginForm.reset();
-        await showUnifiedApplication();
+        await continueUnifiedAdminSecurityCheck();
 
     } catch (error) {
         showLoginError(
@@ -288,6 +305,10 @@ function showUnifiedLogin() {
         .classList.add("hidden");
 
     document
+        .getElementById("unifiedAdminMfaSection")
+        .classList.add("hidden");
+
+    document
         .getElementById("unifiedAdminMenu")
         .classList.add("hidden");
 }
@@ -296,6 +317,10 @@ function showUnifiedLogin() {
 async function showUnifiedApplication() {
     document
         .getElementById("unifiedAdminLoginSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("unifiedAdminMfaSection")
         .classList.add("hidden");
 
     document
@@ -371,6 +396,305 @@ async function loadUnifiedData() {
 
     renderUnifiedDashboard();
 }
+
+
+
+/* =====================================
+   MULTI-FACTOR AUTHENTICATION
+===================================== */
+
+async function continueUnifiedAdminSecurityCheck() {
+    try {
+        const assurance =
+            await unifiedDatabase.auth.mfa
+                .getAuthenticatorAssuranceLevel();
+
+        if (assurance.error) {
+            throw assurance.error;
+        }
+
+        if (
+            assurance.data?.currentLevel === "aal2"
+        ) {
+            await showUnifiedApplication();
+            return;
+        }
+
+        const factors =
+            await unifiedDatabase.auth.mfa
+                .listFactors();
+
+        if (factors.error) {
+            throw factors.error;
+        }
+
+        const verifiedTotpFactors =
+            factors.data?.totp?.filter(
+                function (factor) {
+                    return factor.status === "verified";
+                }
+            ) || [];
+
+        if (verifiedTotpFactors.length > 0) {
+            await startUnifiedMfaChallenge(
+                verifiedTotpFactors[0]
+            );
+
+            return;
+        }
+
+        await startUnifiedMfaEnrollment();
+
+    } catch (error) {
+        await unifiedDatabase.auth.signOut();
+
+        showUnifiedLogin();
+
+        showLoginError(
+            error.message ||
+            "Multi-factor authentication could not be started."
+        );
+    }
+}
+
+
+function showUnifiedMfaSection() {
+    document
+        .getElementById("unifiedAdminLoginSection")
+        .classList.add("hidden");
+
+    document
+        .getElementById("unifiedAdminApplication")
+        .classList.add("hidden");
+
+    document
+        .getElementById("unifiedAdminMenu")
+        .classList.add("hidden");
+
+    document
+        .getElementById("unifiedAdminMfaSection")
+        .classList.remove("hidden");
+}
+
+
+async function startUnifiedMfaEnrollment() {
+    showUnifiedMfaSection();
+
+    pendingUnifiedMfaMode = "enroll";
+    pendingUnifiedMfaFactorId = null;
+
+    document.getElementById(
+        "unifiedMfaTitle"
+    ).textContent =
+        "Set Up Authenticator App";
+
+    document.getElementById(
+        "unifiedMfaDescription"
+    ).textContent =
+        "Scan the QR code below, then enter the 6-digit code from your authenticator app.";
+
+    document.getElementById(
+        "unifiedMfaSubmit"
+    ).textContent =
+        "Enable MFA";
+
+    clearUnifiedMfaMessage();
+
+    const enrollment =
+        await unifiedDatabase.auth.mfa.enroll({
+            factorType: "totp",
+            friendlyName: `Summit Admin ${new Date().toISOString()}`
+        });
+
+    if (enrollment.error) {
+        showUnifiedMfaMessage(
+            enrollment.error.message,
+            true
+        );
+
+        return;
+    }
+
+    pendingUnifiedMfaFactorId =
+        enrollment.data.id;
+
+    const qrCode =
+        enrollment.data.totp?.qr_code || "";
+
+    const qrImage =
+        document.getElementById(
+            "unifiedMfaQrCode"
+        );
+
+    if (qrCode.trim().startsWith("<svg")) {
+        qrImage.src =
+            "data:image/svg+xml;charset=utf-8," +
+            encodeURIComponent(qrCode);
+    } else {
+        qrImage.src = qrCode;
+    }
+
+    document.getElementById(
+        "unifiedMfaSecret"
+    ).textContent =
+        enrollment.data.totp?.secret || "";
+
+    document
+        .getElementById("unifiedMfaSetupBox")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("unifiedMfaCode")
+        .focus();
+}
+
+
+async function startUnifiedMfaChallenge(factor) {
+    showUnifiedMfaSection();
+
+    pendingUnifiedMfaMode = "challenge";
+    pendingUnifiedMfaFactorId = factor.id;
+
+    document.getElementById(
+        "unifiedMfaTitle"
+    ).textContent =
+        "Verify Your Login";
+
+    document.getElementById(
+        "unifiedMfaDescription"
+    ).textContent =
+        "Enter the 6-digit code from your authenticator app.";
+
+    document.getElementById(
+        "unifiedMfaSubmit"
+    ).textContent =
+        "Verify Code";
+
+    document
+        .getElementById("unifiedMfaSetupBox")
+        .classList.add("hidden");
+
+    clearUnifiedMfaMessage();
+
+    document
+        .getElementById("unifiedMfaCode")
+        .focus();
+}
+
+
+async function handleUnifiedMfaSubmit(event) {
+    event.preventDefault();
+
+    const codeInput =
+        document.getElementById(
+            "unifiedMfaCode"
+        );
+
+    const code =
+        codeInput.value.trim();
+
+    if (!/^[0-9]{6}$/.test(code)) {
+        showUnifiedMfaMessage(
+            "Enter the 6-digit authenticator code.",
+            true
+        );
+
+        return;
+    }
+
+    if (!pendingUnifiedMfaFactorId) {
+        showUnifiedMfaMessage(
+            "No MFA factor is ready. Please log in again.",
+            true
+        );
+
+        return;
+    }
+
+    const button =
+        document.getElementById(
+            "unifiedMfaSubmit"
+        );
+
+    const originalText =
+        button.textContent;
+
+    button.disabled = true;
+    button.textContent = "Checking Code...";
+
+    clearUnifiedMfaMessage();
+
+    try {
+        const challenge =
+            await unifiedDatabase.auth.mfa.challenge({
+                factorId: pendingUnifiedMfaFactorId
+            });
+
+        if (challenge.error) {
+            throw challenge.error;
+        }
+
+        const verification =
+            await unifiedDatabase.auth.mfa.verify({
+                factorId: pendingUnifiedMfaFactorId,
+                challengeId: challenge.data.id,
+                code: code
+            });
+
+        if (verification.error) {
+            throw verification.error;
+        }
+
+        pendingUnifiedMfaFactorId = null;
+        pendingUnifiedMfaMode = null;
+
+        codeInput.value = "";
+
+        await showUnifiedApplication();
+
+    } catch (error) {
+        showUnifiedMfaMessage(
+            error.message ||
+            "The MFA code could not be verified.",
+            true
+        );
+
+    } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+
+
+function showUnifiedMfaMessage(
+    message,
+    isError
+) {
+    const element =
+        document.getElementById(
+            "unifiedMfaMessage"
+        );
+
+    element.textContent = message;
+
+    element.className =
+        isError
+            ? "unified-admin-message error-message"
+            : "unified-admin-message success-message";
+}
+
+
+function clearUnifiedMfaMessage() {
+    const element =
+        document.getElementById(
+            "unifiedMfaMessage"
+        );
+
+    element.textContent = "";
+    element.className =
+        "unified-admin-message";
+}
+
 
 
 /* =====================================
