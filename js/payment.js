@@ -54,6 +54,7 @@ async function loadPublicPaymentMethod() {
             .eq("is_active", true)
             .limit(1);
 
+    /* Payment load failures are hidden from public visitors. */
     if (
         result.error ||
         !Array.isArray(result.data) ||

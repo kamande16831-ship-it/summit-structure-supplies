@@ -23,9 +23,7 @@ function initializeSupabase() {
         !window.SUMMIT_SUPABASE_URL ||
         !window.SUMMIT_SUPABASE_KEY
     ) {
-        console.error(
-            "Supabase could not be initialized. Check the script files."
-        );
+        /* Public error details are intentionally hidden. */
 
         return;
     }
@@ -198,7 +196,7 @@ function setupOrderForm() {
                     .insert(orderData);
 
                 if (result.error) {
-                    throw result.error;
+                    throw new Error("PUBLIC_REQUEST_FAILED");
                 }
 
                 showOrderMessage(
@@ -211,10 +209,7 @@ function setupOrderForm() {
                 setMinimumDeliveryDate();
 
             } catch (error) {
-                console.error(
-                    "Order submission failed:",
-                    error
-                );
+                /* Public error details are intentionally hidden. */
 
                 showOrderMessage(
                     orderMessage,
