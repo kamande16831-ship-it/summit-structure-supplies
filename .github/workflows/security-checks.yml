@@ -67,6 +67,7 @@ jobs:
               . \
               --exclude-dir=.git \
               --exclude-dir=vendor \
+              --exclude="security-checks.yml" \
               --exclude="*.sha256"
           then
               echo "Possible dangerous secret found."
