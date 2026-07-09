@@ -492,3 +492,54 @@
         padding: 27px;
     }
 }
+
+/* =========================================
+   ADMIN MFA SCREEN
+========================================= */
+
+.unified-mfa-form {
+    max-width: 520px;
+}
+
+.unified-mfa-setup {
+    margin: 22px 0;
+    padding: 18px;
+    border: 1px solid #dddddd;
+    border-radius: 12px;
+    background-color: #f8f8f8;
+    text-align: center;
+}
+
+.unified-mfa-setup p {
+    color: #555555;
+}
+
+.unified-mfa-setup img {
+    width: min(250px, 100%);
+    height: auto;
+    margin: 18px auto;
+    display: block;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+.unified-mfa-secret-line {
+    margin-top: 14px;
+    overflow-wrap: anywhere;
+}
+
+.unified-mfa-secret-line code {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background-color: #111111;
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.unified-mfa-logout {
+    width: 100%;
+    margin-top: 12px;
+}

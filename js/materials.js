@@ -76,13 +76,10 @@ async function loadPublicMaterials() {
         });
 
     if (result.error) {
-        console.error(
-            "Materials could not be loaded:",
-            result.error
-        );
+        /* Public error details are intentionally hidden. */
 
         showPublicMessage(
-            `Materials could not be loaded: ${result.error.message}`,
+            "Materials could not be loaded. Please try again later.",
             true
         );
 

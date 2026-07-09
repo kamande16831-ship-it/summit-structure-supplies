@@ -1,0 +1,24 @@
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Supabase local temporary data
+supabase/.temp/
+
+# Database backups
+backups/
+*.dump
+*.backup
+*.sql.gz
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local operating-system files
+.DS_Store
+Thumbs.db
