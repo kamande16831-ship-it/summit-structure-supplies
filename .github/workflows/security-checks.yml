@@ -1,0 +1,74 @@
+name: Security Checks
+
+on:
+  push:
+    branches:
+      - main
+      - security-hardening
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  static-security-checks:
+    name: Static security checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check JavaScript syntax
+        run: |
+          for file in js/*.js
+          do
+              echo "Checking $file"
+              node --check "$file"
+          done
+
+      - name: Check for inline scripts
+        run: |
+          if grep -Rni "<script>" . \
+              --include="*.html" \
+              --exclude-dir=.git \
+              --exclude-dir=vendor
+          then
+              echo "Inline script found. Move it to an external JS file."
+              exit 1
+          fi
+
+      - name: Check for inline event handlers
+        run: |
+          if grep -RniE "onclick=|onchange=|onsubmit=|onload=|onerror=" . \
+              --include="*.html" \
+              --exclude-dir=.git \
+              --exclude-dir=vendor
+          then
+              echo "Inline event handler found. Use addEventListener in JS instead."
+              exit 1
+          fi
+
+      - name: Check for inline styles
+        run: |
+          if grep -Rni "style=" . \
+              --include="*.html" \
+              --exclude-dir=.git \
+              --exclude-dir=vendor
+          then
+              echo "Inline style found. Move it to a CSS file."
+              exit 1
+          fi
+
+      - name: Check for dangerous secrets
+        run: |
+          if grep -RniE \
+              'service_role|sb_secret_|SUPABASE_SERVICE_ROLE|SUPABASE_SECRET|DATABASE_URL|DB_PASSWORD|BEGIN (RSA|EC|OPENSSH) PRIVATE KEY' \
+              . \
+              --exclude-dir=.git \
+              --exclude-dir=vendor \
+              --exclude="*.sha256"
+          then
+              echo "Possible dangerous secret found."
+              exit 1
+          fi
