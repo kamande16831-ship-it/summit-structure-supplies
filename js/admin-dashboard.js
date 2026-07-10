@@ -124,7 +124,7 @@ function connectUnifiedAdminEvents() {
         .getElementById("unifiedOrdersTableBody")
         .addEventListener(
             "click",
-            deleteUnifiedOrder
+            handleUnifiedOrderAction
         );
 
     document
@@ -824,14 +824,26 @@ function renderUnifiedOrders(orders) {
             </td>
 
             <td>
-                <button
-                    type="button"
-                    class="unified-delete-button"
-                    data-order-id="${escapeAdminHtml(order.id)}"
-                    data-reference="${escapeAdminHtml(order.reference)}"
-                >
-                    Delete
-                </button>
+                <div class="unified-material-actions">
+
+                    <button
+                        type="button"
+                        class="unified-edit-button unified-invoice-button"
+                        data-order-id="${escapeAdminHtml(order.id)}"
+                    >
+                        Invoice PDF
+                    </button>
+
+                    <button
+                        type="button"
+                        class="unified-delete-button"
+                        data-order-id="${escapeAdminHtml(order.id)}"
+                        data-reference="${escapeAdminHtml(order.reference)}"
+                    >
+                        Delete
+                    </button>
+
+                </div>
             </td>
         `;
 
@@ -893,6 +905,34 @@ async function updateUnifiedOrderStatus(event) {
 
     await loadUnifiedOrders();
 }
+
+
+function handleUnifiedOrderAction(event) {
+    const invoiceButton =
+        event.target.closest(
+            ".unified-invoice-button"
+        );
+
+    if (invoiceButton) {
+        const order =
+            unifiedOrders.find(function (item) {
+                return item.id === invoiceButton.dataset.orderId;
+            });
+
+        if (
+            order &&
+            window.SummitInvoice &&
+            typeof window.SummitInvoice.downloadInvoice === "function"
+        ) {
+            window.SummitInvoice.downloadInvoice(order);
+        }
+
+        return;
+    }
+
+    deleteUnifiedOrder(event);
+}
+
 
 
 async function deleteUnifiedOrder(event) {
